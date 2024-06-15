@@ -1,26 +1,34 @@
 import { ContentItemsInterface } from "./TypesInterfaces/Data/ContentItemsInterface";
-import { FilterSourceType } from "./TypesInterfaces/FilterSourceType";
-import { PluginType } from "./TypesInterfaces/PluginType";
+import { SourceFilterType } from "./TypesInterfaces/Filters/SourceFilterType";
+import { PluginInterface } from "./TypesInterfaces/Plugins/PluginInterface";
 
 class BlogGen {
   // filters
-  private filtersSources: FilterSourceType[] = [];
+  private sourceFilters: SourceFilterType[] = [];
 
   // content items
   private contentItems: ContentItemsInterface[] = [];
 
+  readonly distRoot: string;
+
   // take options
-  constructor() {}
+  constructor({ distRoot }: { distRoot: string }) {
+    this.distRoot = distRoot;
+  }
 
   public async run() {
     // run content filters
-    for (const filterSource of this.filtersSources) {
-      this.contentItems = await filterSource(this.contentItems);
+    for (const sourceFilter of this.sourceFilters) {
+      this.contentItems = await sourceFilter(this.contentItems);
     }
   }
 
-  public addSourceFilter(filterSource: FilterSourceType) {
-    this.filtersSources.push(filterSource);
+  public async addPlugin(plugin: PluginInterface) {
+    await plugin.init(this);
+  }
+
+  public addSourceFilter(filterSource: SourceFilterType) {
+    this.sourceFilters.push(filterSource);
   }
 }
 
