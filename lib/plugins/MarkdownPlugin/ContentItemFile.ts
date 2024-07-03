@@ -23,7 +23,7 @@ export class ContentItemFile implements ContentItemsInterface {
   };
 
   constructor({ file, contentRoot }: { file: Dirent; contentRoot: string }) {
-    // TODO: cleanup!
+    // TODO: cleanup!!!
     return (async () => {
       const { name } = file;
       const isPage = name.substring(0, 4).toLowerCase() == "page";

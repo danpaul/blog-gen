@@ -8,7 +8,6 @@ import { PreBuildFilterType } from "./TypesInterfaces/Filters/PreBuildFilterType
 import { BuildFilterType } from "./TypesInterfaces/Filters/BuildFilterType";
 
 export type BlogGenOptionsType = {
-  distRoot: string;
   siteTitle: string;
 };
 
@@ -72,22 +71,27 @@ class BlogGen {
     await plugin.init(this);
   }
 
+  // used for `this.contentItems`
   public addSourceFilter(sourceFilter: SourceFilterType) {
     this.sourceFilters.push(sourceFilter);
   }
 
+  // runs after content items are added to add additional generated items
   public addContentItemsFilter(contentItemsFilter: ContentItemsFilterType) {
     this.contentItemsFilters.push(contentItemsFilter);
   }
 
+  // used to generate menu items for `this.menuItems`
   public addMenuItemsFilter(menuItemsFilter: MenuItemsFilterType) {
     this.menuItemsFilters.push(menuItemsFilter);
   }
 
+  // runs before build
   public addPreBuildFilter(preBuildFilter: PreBuildFilterType) {
     this.preBuildFilters.push(preBuildFilter);
   }
 
+  // runs to build
   public addBuildFilter(buildFilter: BuildFilterType) {
     this.buildFilters.push(buildFilter);
   }

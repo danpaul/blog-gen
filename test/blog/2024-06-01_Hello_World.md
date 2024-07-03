@@ -1,6 +1,5 @@
 ---
-foo: bar
-categories: [foo, bar, baz]
+category: [foo, bar, baz]
 tags: [tag1, tag2]
 ---
 

@@ -11,8 +11,6 @@ export interface ContentItemsInterface {
   meta: {
     [key: string]: any;
   };
-  distPath: string;
-  // getDistPath: () => string;
-  render: () => Promise<string>;
+  // distPath: string;
   pageUrl: string;
 }
