@@ -1,0 +1,3 @@
+- remove distPath from pages
+- add tags
+- add category links to pages and archive pages

@@ -1,8 +1,8 @@
 import { PluginInterface } from "../../BlogGen/TypesInterfaces/Plugins/PluginInterface";
 import BlogGen from "../../BlogGen/BlogGen";
 import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/ContentItemsInterface";
-import * as cheerio from "cheerio";
-import { ArchivePageTempate } from "./ArchivePageTemplate";
+import { ArchivePageTemplate } from "./ArchivePageTemplate";
+import { CategoryTree } from "./CategoryTree";
 
 export class BlogPlugin implements PluginInterface {
   private itemsPerPage: number;
@@ -27,14 +27,56 @@ export class BlogPlugin implements PluginInterface {
       ...this.generateArchivePages({ paginatedItems }),
     ];
 
-    const doc = cheerio.load("");
-
-    // paginate all
-    // update page meta
-    // paginate based on categories
-    // paginate based
+    // category tree
+    const categoryTree = new CategoryTree({ contentItems });
+    await categoryTree.iterateTree(async (categories, items) => {
+      const paginatedCategoryItems = this.paginate(items);
+      returnItems = [
+        ...returnItems,
+        ...this.generateArchivePages({
+          paginatedItems: paginatedCategoryItems,
+          categories,
+        }),
+      ];
+    });
 
     return returnItems;
+  }
+
+  private generateArchivePages({
+    paginatedItems,
+    categories,
+  }: {
+    paginatedItems: ContentItemsInterface[][];
+    categories?: string[];
+  }): ContentItemsInterface[] {
+    const contentItems: ContentItemsInterface[] = [];
+    paginatedItems.forEach((items, index) => {
+      const { pageUrl, nextPageUrl, previousPageUrl } = this.getPageUrls({
+        paginatedItems,
+        categories,
+        index,
+      });
+      const isHome = !categories && index == 0;
+      const categoryId = this.getCategoryId(categories);
+      const archivePageTemplate = new ArchivePageTemplate({
+        previousPageUrl,
+        nextPageUrl,
+        items,
+      });
+      contentItems.push({
+        title: isHome
+          ? "Home"
+          : categoryId
+          ? `${categoryId}-${index + 1}`
+          : `archive-${index + 1}`,
+        type: "blog-archive",
+        meta: {},
+        pageUrl,
+        $: archivePageTemplate.render(),
+      });
+    });
+    return contentItems;
   }
 
   private compareItemsByDate(
@@ -62,49 +104,42 @@ export class BlogPlugin implements PluginInterface {
     return paginatedItems;
   }
 
-  private generateArchivePages({
+  private getCategoryId(categories?: string[]) {
+    return categories ? categories.join("-") : "";
+  }
+
+  private getPageUrls({
     paginatedItems,
     categories,
+    index,
   }: {
     paginatedItems: ContentItemsInterface[][];
     categories?: string[];
-  }): ContentItemsInterface[] {
-    const contentItems: ContentItemsInterface[] = [];
-    paginatedItems.forEach((items, index) => {
-      const hasNextPage = paginatedItems.length > index + 1;
-      const hasPreviousPage = index != 0;
-      const isHome = !categories && index == 0;
-      const categoryBase = categories ? categories.join("-") : "";
-      const pageUrl = isHome
-        ? "index.html"
-        : `${categoryBase}${index + 1}.html`;
-      const nextPageUrl = hasNextPage
-        ? `${categoryBase}${index + 2}.html`
-        : null;
-      const previousPageUrl = hasPreviousPage
-        ? categoryBase
-          ? `${categoryBase}${index}.html`
-          : "index.html"
-        : null;
-      // asdf
-      console.log("nextPageUrl", nextPageUrl);
-      const archivePageTempate = new ArchivePageTempate({
-        previousPageUrl,
-        nextPageUrl,
-        items,
-      });
-      contentItems.push({
-        title: isHome
-          ? "Home"
-          : categoryBase
-          ? `${categoryBase}-${index + 1}`
-          : `archive-${index + 1}`,
-        type: "blog-archive",
-        meta: {},
-        pageUrl,
-        $: archivePageTempate.render(),
-      });
-    });
-    return contentItems;
+    index: number;
+  }): {
+    pageUrl: string;
+    nextPageUrl: string | null;
+    previousPageUrl: string | null;
+  } {
+    const hasNextPage = paginatedItems.length > index + 1;
+    const hasPreviousPage = index != 0;
+    const isHome = !categories && index == 0;
+    let categoryBase = categories ? categories.join("-") : "";
+    if (categoryBase) {
+      categoryBase += "-";
+    }
+    const pageUrl = isHome ? "index.html" : `${categoryBase}${index + 1}.html`;
+    const nextPageUrl = hasNextPage ? `${categoryBase}${index + 2}.html` : null;
+    const previousPageUrl = hasPreviousPage
+      ? categoryBase
+        ? `${categoryBase}${index}.html`
+        : "index.html"
+      : null;
+
+    return {
+      pageUrl,
+      nextPageUrl,
+      previousPageUrl,
+    };
   }
 }

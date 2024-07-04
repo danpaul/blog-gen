@@ -2,7 +2,7 @@ import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/Conten
 import * as cheerio from "cheerio";
 import { IBlogGenImage } from "../../interfaces/IBlogGenImage";
 
-export class ArchivePageTempate {
+export class ArchivePageTemplate {
   private previousPageUrl?: string;
   private nextPageUrl?: string;
   private items: ContentItemsInterface[];

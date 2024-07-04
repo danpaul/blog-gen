@@ -21,6 +21,8 @@ export class FileBuildPlugin implements PluginInterface {
     contentItems: ContentItemsInterface[];
   }) {
     for (const contentItem of contentItems) {
+      // console.log("building:", contentItem.pageUrl);
+      // asdf
       await fs.writeFile(
         path.normalize(`${this.distRoot}/${contentItem.pageUrl}`),
         contentItem.$.root().html()
