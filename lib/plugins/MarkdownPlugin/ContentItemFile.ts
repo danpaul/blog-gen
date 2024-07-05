@@ -16,7 +16,6 @@ export class ContentItemFile implements ContentItemsInterface {
   meta: {};
   excerpt: string;
   pageUrl: string;
-  distPath: string;
   featuredImage?: {
     src: string;
     alt: string;
@@ -65,7 +64,6 @@ export class ContentItemFile implements ContentItemsInterface {
       this.title = title;
       this.type = isPage ? "page" : "post";
       this.published = new Date(dateString);
-      this.distPath = path.normalize(contentRoot + "/" + relativeUrlPath);
       this.$ = $;
       this.excerpt = excerpt;
       this.featuredImage = featuredImage;
@@ -75,6 +73,5 @@ export class ContentItemFile implements ContentItemsInterface {
     })() as unknown as ContentItemFile;
   }
 
-  getDistPath: () => string;
   render: () => Promise<string>;
 }

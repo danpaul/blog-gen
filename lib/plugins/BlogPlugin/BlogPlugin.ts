@@ -63,6 +63,7 @@ export class BlogPlugin implements PluginInterface {
         previousPageUrl,
         nextPageUrl,
         items,
+        categories,
       });
       contentItems.push({
         title: isHome
@@ -108,6 +109,10 @@ export class BlogPlugin implements PluginInterface {
     return categories ? categories.join("-") : "";
   }
 
+  private getCategoryUrl(categories: string[], page: number) {
+    return `category-${categories.join("-")}-${page}.html`;
+  }
+
   private getPageUrls({
     paginatedItems,
     categories,
@@ -124,16 +129,22 @@ export class BlogPlugin implements PluginInterface {
     const hasNextPage = paginatedItems.length > index + 1;
     const hasPreviousPage = index != 0;
     const isHome = !categories && index == 0;
-    let categoryBase = categories ? categories.join("-") : "";
-    if (categoryBase) {
-      categoryBase += "-";
-    }
-    const pageUrl = isHome ? "index.html" : `${categoryBase}${index + 1}.html`;
-    const nextPageUrl = hasNextPage ? `${categoryBase}${index + 2}.html` : null;
+    const pageUrl = isHome
+      ? "index.html"
+      : categories
+      ? this.getCategoryUrl(categories, index + 1)
+      : `${index + 1}.html`;
+    const nextPageUrl = hasNextPage
+      ? categories
+        ? this.getCategoryUrl(categories, index + 2)
+        : `${index + 2}.html`
+      : null;
     const previousPageUrl = hasPreviousPage
-      ? categoryBase
-        ? `${categoryBase}${index}.html`
-        : "index.html"
+      ? categories
+        ? this.getCategoryUrl(categories, index)
+        : index == 1
+        ? "index.html"
+        : `${index}.html`
       : null;
 
     return {

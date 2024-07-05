@@ -26,7 +26,9 @@ const ITEMS_PER_PAGE = 1;
       itemsPerPage: ITEMS_PER_PAGE,
     })
   );
-  await blogGen.addPlugin(new FileBuildPlugin({ distRoot: DIST_ROOT }));
+  await blogGen.addPlugin(
+    new FileBuildPlugin({ distRoot: DIST_ROOT, contentRoot: CONTENT_ROOT })
+  );
 
   await blogGen.run();
 

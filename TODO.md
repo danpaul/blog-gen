@@ -1,3 +1,7 @@
-- remove distPath from pages
+- add headings and breadcrumbs to category pages
+- add category links to posts and archive pages
 - add tags
-- add category links to pages and archive pages
+- add categories and tags to menu
+- cleanup old files
+- add rss feeds?
+- image resize plugin

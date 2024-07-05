@@ -10,10 +10,12 @@ export class ArchivePageTemplate {
     previousPageUrl,
     nextPageUrl,
     items,
+    categories,
   }: {
     previousPageUrl?: string;
     nextPageUrl?: string;
     items: ContentItemsInterface[];
+    categories: string[];
   }) {
     this.previousPageUrl = previousPageUrl;
     this.nextPageUrl = nextPageUrl;
