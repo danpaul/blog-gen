@@ -6,15 +6,13 @@
 
 import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/ContentItemsInterface";
 
-type CategoryTreeNode = {
+export type CategoryTreeNode = {
   items: ContentItemsInterface[];
   children: { [key: string]: CategoryTreeNode };
 };
 
 export class CategoryTree {
   private contentItems: ContentItemsInterface[];
-  //   public readonly tree: { [key: string]: CategoryTreeNode };
-  // asdf
   public readonly tree: CategoryTreeNode;
 
   constructor({ contentItems }: { contentItems: ContentItemsInterface[] }) {

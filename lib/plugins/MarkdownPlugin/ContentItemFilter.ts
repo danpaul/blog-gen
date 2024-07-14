@@ -1,4 +1,4 @@
-import { BlogGenOptionsType } from "../../BlogGen/BlogGen";
+import { BlogGenOptionsType } from "../../BlogGen/BlogGenBase";
 import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/ContentItemsInterface";
 
 export const ContentItemFilter = ({

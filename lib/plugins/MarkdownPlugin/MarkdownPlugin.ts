@@ -2,7 +2,7 @@ import * as fs from "fs/promises";
 
 import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/ContentItemsInterface";
 import { PluginInterface } from "../../BlogGen/TypesInterfaces/Plugins/PluginInterface";
-import BlogGen from "../../BlogGen/BlogGen";
+import BlogGen from "../../BlogGen/BlogGenBase";
 import { FileMapper } from "./FileMapper";
 import { ContentItemFilter } from "./ContentItemFilter";
 import { MenuItemInterface } from "../../BlogGen/TypesInterfaces/Data/MenuItemInterface";

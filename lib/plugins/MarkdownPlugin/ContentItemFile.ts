@@ -42,6 +42,15 @@ export class ContentItemFile implements ContentItemsInterface {
       const fileString = await fs.readFile(filePath, "utf-8");
       const fileMarkup = converter.makeHtml(fileString);
       const $ = cheerio.load(fileMarkup);
+
+      // add header
+      $("body").prepend(`
+        <header>
+          <h1>${title}</h1>
+          <h6>Published: ${dateString}</h6>
+        </header>
+      `);
+
       const metadata = yaml.load(converter.getMetadata(true)) || {};
 
       const excerpt = $("p").first().text() || "";

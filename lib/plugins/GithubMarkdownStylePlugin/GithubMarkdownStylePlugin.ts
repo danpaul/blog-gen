@@ -3,7 +3,7 @@ import * as path from "path";
 
 import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/ContentItemsInterface";
 import { PluginInterface } from "../../BlogGen/TypesInterfaces/Plugins/PluginInterface";
-import BlogGen from "../../BlogGen/BlogGen";
+import BlogGen from "../../BlogGen/BlogGenBase";
 
 const FILE_NAME = "assets/css/github-markdown.css";
 const SOURCE_FILE_PATH =

@@ -1,37 +1,56 @@
 import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/ContentItemsInterface";
 import * as cheerio from "cheerio";
 import { IBlogGenImage } from "../../interfaces/IBlogGenImage";
+import { CategoryLink } from "./BlogPlugin";
 
 export class ArchivePageTemplate {
   private previousPageUrl?: string;
   private nextPageUrl?: string;
   private items: ContentItemsInterface[];
+  private categoryLinks: CategoryLink[];
   constructor({
     previousPageUrl,
     nextPageUrl,
     items,
-    categories,
+    categoryLinks,
   }: {
     previousPageUrl?: string;
     nextPageUrl?: string;
     items: ContentItemsInterface[];
-    categories: string[];
+    categoryLinks: CategoryLink[];
   }) {
     this.previousPageUrl = previousPageUrl;
     this.nextPageUrl = nextPageUrl;
     this.items = items;
+    this.categoryLinks = categoryLinks;
   }
   render(): cheerio.Root {
     const $ = cheerio.load("");
     const body = $("body");
-    this.items.forEach(({ title, featuredImage, excerpt, pageUrl }) => {
+    if (this.categoryLinks.length) {
+      body.append(`<h1 style="padding-bottom: 60px;">Category: </h1>`);
+      const h1 = $("body h1");
+      this.categoryLinks.forEach(({ label, url }, index) => {
+        h1.append(`<a href="${url}">${label}</a>`);
+        if (index < this.categoryLinks.length - 1) {
+          h1.append(" / ");
+        }
+      });
+    }
+    this.items.forEach(({ title, featuredImage, excerpt, pageUrl, $ }) => {
+      let header = `<h2><a href="${pageUrl}">${title}<a/></h2>`;
+      const clonedHeader = cheerio.load($("body header").toString());
+      if (clonedHeader) {
+        clonedHeader("h1").replaceWith(`<h2>${clonedHeader("h1").text()}</h2>`);
+        header = clonedHeader("header").html();
+      }
       body.append(
         `
           <article>
-            <h2>${title}</h2>
+            ${header}
             ${this.getImage(featuredImage)}
             <p>${excerpt || ""}</p>
-            <a href="${pageUrl}">Read More</a>
+            <a href="${pageUrl}">More...</a>
           <article>
         `
       );

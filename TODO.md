@@ -1,7 +1,8 @@
-- add headings and breadcrumbs to category pages
-- add category links to posts and archive pages
+- add categories to menu
 - add tags
-- add categories and tags to menu
+- add tags to menu
 - cleanup old files
+- bundle as a package, add main class
 - add rss feeds?
 - image resize plugin
+- document

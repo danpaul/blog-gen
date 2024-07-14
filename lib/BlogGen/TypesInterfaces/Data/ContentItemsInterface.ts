@@ -11,6 +11,5 @@ export interface ContentItemsInterface {
   meta: {
     [key: string]: any;
   };
-  // distPath: string;
   pageUrl: string;
 }
