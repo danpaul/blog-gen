@@ -1,3 +1,9 @@
+- create script
+  - add config manager
+    - site meta
+  - build script
+  - build TS and update scripts to use built
+- defined site and page meta options
 - add categories to menu
 - add tags
 - add tags to menu

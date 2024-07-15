@@ -1,11 +1,11 @@
 import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/ContentItemsInterface";
 import { MenuItemInterface } from "../../BlogGen/TypesInterfaces/Data/MenuItemInterface";
-import { BlogGenOptionsType } from "../../BlogGen/BlogGenBase";
+import { BlogGenSiteOptionsType } from "../../BlogGen/Options";
 
 export class InjectMenu {
   private menuItems: MenuItemInterface[];
   private contentItems: ContentItemsInterface[];
-  private options: BlogGenOptionsType;
+  private options: BlogGenSiteOptionsType;
 
   constructor({
     menuItems,
@@ -14,7 +14,7 @@ export class InjectMenu {
   }: {
     menuItems: MenuItemInterface[];
     contentItems: ContentItemsInterface[];
-    options: BlogGenOptionsType;
+    options: BlogGenSiteOptionsType;
   }) {
     this.menuItems = menuItems;
     this.contentItems = contentItems;
@@ -34,7 +34,7 @@ export class InjectMenu {
       ${this.getMenuScript()}
       <h3 style="display: flex; justify-content: space-between;">
         <a href="index.html">
-          ${this.options.siteTitle}
+          ${this.options.title}
         </a>
         <a href="#" onclick="blogGenRenderMenuScriptOpen()">MENU</a>
       </h3>

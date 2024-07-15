@@ -6,10 +6,11 @@ import { MenuItemInterface } from "./TypesInterfaces/Data/MenuItemInterface";
 import { MenuItemsFilterType } from "./TypesInterfaces/Filters/MenuItemsFilter";
 import { PreBuildFilterType } from "./TypesInterfaces/Filters/PreBuildFilterType";
 import { BuildFilterType } from "./TypesInterfaces/Filters/BuildFilterType";
+import { BlogGenSiteOptionsType } from "./Options";
 
-export type BlogGenOptionsType = {
-  siteTitle: string;
-};
+// export type BlogGenBaseOptionsType = {
+//   siteTitle: string;
+// };
 
 class BlogGenBase {
   // filters
@@ -26,9 +27,9 @@ class BlogGenBase {
   private menuItems: MenuItemInterface[] = [];
 
   // options
-  readonly siteOptions: BlogGenOptionsType;
+  readonly siteOptions: BlogGenSiteOptionsType;
 
-  constructor(siteOptions: BlogGenOptionsType) {
+  constructor(siteOptions: BlogGenSiteOptionsType) {
     this.siteOptions = siteOptions;
   }
 
@@ -67,8 +68,8 @@ class BlogGenBase {
     }
   }
 
-  public async addPlugin(plugin: PluginInterface) {
-    await plugin.init(this);
+  public addPlugin(plugin: PluginInterface) {
+    plugin.init(this);
   }
 
   // used for `this.contentItems`

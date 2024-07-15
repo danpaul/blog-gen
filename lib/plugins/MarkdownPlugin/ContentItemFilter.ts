@@ -1,4 +1,4 @@
-import { BlogGenOptionsType } from "../../BlogGen/BlogGenBase";
+import { BlogGenSiteOptionsType } from "../../BlogGen/Options";
 import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/ContentItemsInterface";
 
 export const ContentItemFilter = ({
@@ -6,9 +6,9 @@ export const ContentItemFilter = ({
   contentItem,
 }: {
   contentItem: ContentItemsInterface;
-  options: BlogGenOptionsType;
+  options: BlogGenSiteOptionsType;
 }) => {
-  let title = options.siteTitle || "";
+  let title = options.title || "";
   title = `${title}${title && contentItem.title ? " - " : ""}`;
   title = contentItem.title ? `${title}${contentItem.title}` : title;
   contentItem.$("head").append(`<title>${title}</title>`);

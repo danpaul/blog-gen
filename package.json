@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "blog-gen-build": "ts-node lib/index.ts",
     "test": "ts-node test/test.ts",
     "test2": "ts-node test/test2.ts",
     "dev": "ts-node index.ts"
