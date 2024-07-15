@@ -778,7 +778,7 @@ const GetBlogGenOptions = async ({
     `${options.build.contentRoot}/${OPTIONS_FILE}`
   );
   let jsonData = {};
-  if (await fs.exists(jsonPath)) {
+  if (await fs.existsSync(jsonPath)) {
     try {
       const fileData = (await fs.readFileSync(jsonPath)).toString();
       jsonData = JSON.parse(fileData);

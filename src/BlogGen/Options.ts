@@ -54,7 +54,7 @@ export const GetBlogGenOptions = async ({
   );
 
   let jsonData: any = {};
-  if (await fs.exists(jsonPath)) {
+  if (await fs.existsSync(jsonPath)) {
     try {
       const fileData = (await fs.readFileSync(jsonPath)).toString();
       jsonData = JSON.parse(fileData);
