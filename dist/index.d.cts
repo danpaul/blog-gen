@@ -57,6 +57,10 @@ type BlogGenOptionsType = {
     site: BlogGenSiteOptionsType;
     build: BlogGenBuildOptionsType;
 };
+declare const GetBlogGenOptions: ({ contentRoot, distRoot, }?: {
+    contentRoot?: string;
+    distRoot?: string;
+}) => Promise<BlogGenOptionsType>;
 
 declare class BlogGenBase {
     private sourceFilters;
@@ -81,4 +85,4 @@ declare class BlogGen extends BlogGenBase {
     constructor(options: BlogGenOptionsType);
 }
 
-export { BlogGen, BlogGenBase };
+export { BlogGen, BlogGenBase, GetBlogGenOptions };
