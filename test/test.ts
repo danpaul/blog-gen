@@ -1,0 +1,29 @@
+import BlogGen from "../lib/BlogGen/BlogGen";
+
+const express = require("express");
+
+const CONTENT_ROOT = __dirname + "/blog";
+const DIST_ROOT = __dirname + "/dist";
+const ITEMS_PER_PAGE = 1;
+
+(async () => {
+  const blogGen = new BlogGen({
+    site: { title: "my site", description: "", author: "", keywords: [] },
+    build: {
+      contentRoot: CONTENT_ROOT,
+      distRoot: DIST_ROOT,
+      itemsPerPage: ITEMS_PER_PAGE,
+    },
+  });
+
+  await blogGen.run();
+
+  const app = express();
+  const port = 3000;
+  app.use(express.static(DIST_ROOT));
+  app.listen(port, () => {
+    console.log(`Serving site on: ${port}`);
+  });
+
+  console.log("success!");
+})();
