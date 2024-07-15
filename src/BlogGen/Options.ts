@@ -1,6 +1,6 @@
 // import * as fs from "fs-extra";
 // import * as fs from "fs";
-const fs = require("fs/promises");
+const fs = require("fs-extra");
 import * as path from "path";
 
 const OPTIONS_FILE = "bloggen.json";
