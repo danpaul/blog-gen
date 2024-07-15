@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const BlogGenSort = ({ files, }) => {
     const sorted = {
         pages: [],
@@ -14,4 +16,4 @@ const BlogGenSort = ({ files, }) => {
     });
     return sorted;
 };
-export default BlogGenSort;
+exports.default = BlogGenSort;

@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const menuScript = `
 <script>
   function blogGenRenderMenuScriptOpen(e) {
@@ -51,4 +53,4 @@ const BlogGenRenderMenu = ({ pageNodes, siteMeta, }) => {
       `;
     };
 };
-export default BlogGenRenderMenu;
+exports.default = BlogGenRenderMenu;

@@ -1,5 +1,10 @@
-import constants from "../../constants";
-import BlogGenRenderPaginateResult from "./BlogGenRenderPaginateResult";
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const constants_1 = __importDefault(require("../../constants"));
+const BlogGenRenderPaginateResult_1 = __importDefault(require("./BlogGenRenderPaginateResult"));
 const BlogGenRender = async ({ parsedFile, paginatedResult, siteMeta, renderMenu, }) => {
     let htmlString = "";
     let { title } = siteMeta;
@@ -8,7 +13,7 @@ const BlogGenRender = async ({ parsedFile, paginatedResult, siteMeta, renderMenu
         htmlString = parsedFile.$("body").html();
     }
     else if (paginatedResult) {
-        htmlString = BlogGenRenderPaginateResult(paginatedResult);
+        htmlString = (0, BlogGenRenderPaginateResult_1.default)(paginatedResult);
     }
     const menu = await renderMenu();
     return `<!DOCTYPE html>
@@ -17,7 +22,7 @@ const BlogGenRender = async ({ parsedFile, paginatedResult, siteMeta, renderMenu
             <meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             <title>${title}</title>
-            <link rel="stylesheet" href="${constants.assetPathBlogGenCss.substring(1)}">
+            <link rel="stylesheet" href="${constants_1.default.assetPathBlogGenCss.substring(1)}">
             <style>
                 .markdown-body {
                     box-sizing: border-box;
@@ -42,4 +47,4 @@ const BlogGenRender = async ({ parsedFile, paginatedResult, siteMeta, renderMenu
         </body>
     </html>`;
 };
-export default BlogGenRender;
+exports.default = BlogGenRender;

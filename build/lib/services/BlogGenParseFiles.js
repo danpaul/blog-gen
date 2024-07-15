@@ -1,10 +1,36 @@
-import * as path from "path";
-import * as fs from "fs-extra";
-import * as cheerio from "cheerio";
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BlogGenParseFile = void 0;
+const path = __importStar(require("path"));
+const fs = __importStar(require("fs-extra"));
+const cheerio = __importStar(require("cheerio"));
 const yaml = require("js-yaml");
 const showdown = require("showdown");
 const converter = new showdown.Converter({ metadata: true });
-export const BlogGenParseFile = async ({ file, contentRoot, distRoot, }) => {
+const BlogGenParseFile = async ({ file, contentRoot, distRoot, }) => {
     const { name } = file;
     const isPage = name.substring(0, 4).toLowerCase() == "page";
     const cutFileName = isPage ? name.substring(5) : name;
@@ -43,7 +69,8 @@ export const BlogGenParseFile = async ({ file, contentRoot, distRoot, }) => {
         metadata,
     };
 };
+exports.BlogGenParseFile = BlogGenParseFile;
 const BlogGenParseFiles = async ({ files, contentRoot, distRoot, }) => {
-    return Promise.all(files.map((file) => BlogGenParseFile({ file, contentRoot, distRoot })));
+    return Promise.all(files.map((file) => (0, exports.BlogGenParseFile)({ file, contentRoot, distRoot })));
 };
-export default BlogGenParseFiles;
+exports.default = BlogGenParseFiles;

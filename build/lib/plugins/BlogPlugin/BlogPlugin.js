@@ -1,6 +1,9 @@
-import { ArchivePageTemplate } from "./ArchivePageTemplate";
-import { CategoryTree } from "./CategoryTree";
-export class BlogPlugin {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BlogPlugin = void 0;
+const ArchivePageTemplate_1 = require("./ArchivePageTemplate");
+const CategoryTree_1 = require("./CategoryTree");
+class BlogPlugin {
     constructor({ itemsPerPage }) {
         this.itemsPerPage = itemsPerPage;
     }
@@ -26,7 +29,7 @@ export class BlogPlugin {
                 menuItems.push(menuItem);
             }
         };
-        const categoryTree = new CategoryTree({ contentItems: blogContentItems });
+        const categoryTree = new CategoryTree_1.CategoryTree({ contentItems: blogContentItems });
         if (Object.keys(categoryTree.tree.children).length) {
             categoryMenuItems.push({ title: "Categories", children: [] });
             addNodes(categoryTree.tree, categoryMenuItems[0].children, []);
@@ -71,7 +74,7 @@ export class BlogPlugin {
     }
     async getCategoryArchivePages(contentItems) {
         let categoryArchivePages = [];
-        await new CategoryTree({ contentItems }).iterateTree(async (categories, items) => {
+        await new CategoryTree_1.CategoryTree({ contentItems }).iterateTree(async (categories, items) => {
             const paginatedCategoryItems = this.paginate(items);
             categoryArchivePages = [
                 ...categoryArchivePages,
@@ -98,7 +101,7 @@ export class BlogPlugin {
             });
             const isHome = !categories && index == 0;
             const categoryId = this.getCategoryId(categories);
-            const archivePageTemplate = new ArchivePageTemplate({
+            const archivePageTemplate = new ArchivePageTemplate_1.ArchivePageTemplate({
                 previousPageUrl,
                 nextPageUrl,
                 items,
@@ -195,3 +198,4 @@ export class BlogPlugin {
         };
     }
 }
+exports.BlogPlugin = BlogPlugin;

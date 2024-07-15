@@ -1,8 +1,13 @@
-import { ensureDir, emptyDir } from "fs-extra";
-import constants from "../constants";
-const BlogGenInitDirs = async ({ distRoot }) => {
-    await ensureDir(distRoot);
-    await emptyDir(distRoot);
-    await ensureDir(distRoot + constants.assetPath);
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-export default BlogGenInitDirs;
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_extra_1 = require("fs-extra");
+const constants_1 = __importDefault(require("../constants"));
+const BlogGenInitDirs = async ({ distRoot }) => {
+    await (0, fs_extra_1.ensureDir)(distRoot);
+    await (0, fs_extra_1.emptyDir)(distRoot);
+    await (0, fs_extra_1.ensureDir)(distRoot + constants_1.default.assetPath);
+};
+exports.default = BlogGenInitDirs;

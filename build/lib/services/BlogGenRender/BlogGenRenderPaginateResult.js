@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const BlogGenRenderPaginateResult = (paginatedResult) => {
     let content = "";
     const image = (image) => {
@@ -36,4 +38,4 @@ const BlogGenRenderPaginateResult = (paginatedResult) => {
     `;
     return content;
 };
-export default BlogGenRenderPaginateResult;
+exports.default = BlogGenRenderPaginateResult;

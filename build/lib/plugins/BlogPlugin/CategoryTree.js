@@ -1,9 +1,12 @@
+"use strict";
 /**
  * - label
  * - items
  * - children
  */
-export class CategoryTree {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CategoryTree = void 0;
+class CategoryTree {
     constructor({ contentItems }) {
         this.contentItems = contentItems;
         this.tree = this.getCategoryTree();
@@ -45,3 +48,4 @@ export class CategoryTree {
         };
     }
 }
+exports.CategoryTree = CategoryTree;

@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 // export type BlogGenBaseOptionsType = {
 //   siteTitle: string;
 // };
@@ -69,4 +71,4 @@ class BlogGenBase {
         this.buildFilters.push(buildFilter);
     }
 }
-export default BlogGenBase;
+exports.default = BlogGenBase;

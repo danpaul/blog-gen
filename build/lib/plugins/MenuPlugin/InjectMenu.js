@@ -1,4 +1,7 @@
-export class InjectMenu {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.InjectMenu = void 0;
+class InjectMenu {
     constructor({ menuItems, contentItems, options, }) {
         this.menuItems = menuItems;
         this.contentItems = contentItems;
@@ -65,3 +68,4 @@ export class InjectMenu {
     `;
     }
 }
+exports.InjectMenu = InjectMenu;
