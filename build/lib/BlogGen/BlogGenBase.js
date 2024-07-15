@@ -1,8 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-// export type BlogGenBaseOptionsType = {
-//   siteTitle: string;
-// };
 class BlogGenBase {
     constructor(siteOptions) {
         // filters

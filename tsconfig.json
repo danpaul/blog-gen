@@ -4,6 +4,6 @@
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "NodeNext",
     "outDir": "./build",
-    "module": "nodenext"
+    "module": "NodeNext"
   }
 }

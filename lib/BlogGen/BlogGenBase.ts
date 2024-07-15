@@ -8,10 +8,6 @@ import { PreBuildFilterType } from "./TypesInterfaces/Filters/PreBuildFilterType
 import { BuildFilterType } from "./TypesInterfaces/Filters/BuildFilterType";
 import { BlogGenSiteOptionsType } from "./Options";
 
-// export type BlogGenBaseOptionsType = {
-//   siteTitle: string;
-// };
-
 class BlogGenBase {
   // filters
   private sourceFilters: SourceFilterType[] = [];

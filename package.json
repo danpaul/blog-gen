@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "build/index.js",
+  "type": "module",
   "scripts": {
     "blog-gen-build": "build/build.js",
     "test": "ts-node test/test.ts",
