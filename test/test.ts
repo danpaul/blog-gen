@@ -1,4 +1,4 @@
-import BlogGen from "../lib/BlogGen/BlogGen";
+import BlogGen from "../src/BlogGen/BlogGen";
 
 const express = require("express");
 

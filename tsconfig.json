@@ -1,9 +1,16 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Node 19",
   "compilerOptions": {
-    "target": "ES2021",
-    "allowSyntheticDefaultImports": true,
-    "moduleResolution": "NodeNext",
-    "outDir": "./build",
-    "module": "NodeNext"
-  }
+    "lib": ["es2022"],
+    "module": "commonjs",
+    "target": "es2022",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",
+    "declaration": true
+  },
+  "include": ["./src/**/*"]
 }
