@@ -776,7 +776,7 @@ class BlogGen extends BlogGenBase {
   }
 }
 
-const fs = require$1("fs/promises");
+const fs = require$1("fs-extra");
 const OPTIONS_FILE = "bloggen.json";
 const defaultBuildOptions = () => ({
   contentRoot: "",
