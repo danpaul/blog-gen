@@ -1,9 +1,4 @@
-import IBloGenOptions from "./lib/interfaces/IBlogGenOptions";
-import BlogGenInitDirs from "./lib/services/BlogGenInitDirs";
-import BlogGenReadFiles from "./lib/services/BlogGenReadFiles";
+import BlogGen from "./lib/BlogGen/BlogGen";
+import BlogGenBase from "./lib/BlogGen/BlogGenBase";
 
-const BlogGen = async (options: IBloGenOptions) => {
-  await BlogGenInitDirs(options);
-};
-
-export { BlogGen, BlogGenInitDirs, BlogGenReadFiles, IBloGenOptions };
+export { BlogGen, BlogGenBase };
