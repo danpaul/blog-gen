@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio';
 import * as path from 'path';
-import * as fs from 'fs-extra';
-import * as fs$1 from 'fs/promises';
+import * as fs$2 from 'fs-extra';
+import * as fs$3 from 'fs/promises';
 import { createRequire } from 'module';
 
 class ArchivePageTemplate {
@@ -347,22 +347,22 @@ class FileBuildPlugin {
     await this.migrateAssets();
   }
   async cleanBuildDir() {
-    await fs.rm(this.distRoot, { recursive: true, force: true });
-    await fs.mkdir(this.distRoot);
+    await fs$2.rm(this.distRoot, { recursive: true, force: true });
+    await fs$2.mkdir(this.distRoot);
   }
   async buildContent({
     contentItems
   }) {
     for (const contentItem of contentItems) {
-      await fs.writeFile(
+      await fs$2.writeFile(
         path.normalize(`${this.distRoot}/${contentItem.pageUrl}`),
         contentItem.$.root().html() || ""
       );
     }
   }
   async migrateAssets() {
-    await fs.ensureDir(this.assetDistPath);
-    await fs.copy(this.assetSrcPath, this.assetDistPath);
+    await fs$2.ensureDir(this.assetDistPath);
+    await fs$2.copy(this.assetSrcPath, this.assetDistPath);
   }
 }
 
@@ -408,7 +408,7 @@ class GithubMarkdownStylePlugin {
     });
   }
   async buildFilter() {
-    await fs.copy(
+    await fs$2.copy(
       path.normalize(SOURCE_FILE_PATH),
       path.normalize(`${this.distRoot}/${FILE_NAME}`)
     );
@@ -421,6 +421,7 @@ var require$1 = (
 				: require
 		);
 
+const fs$1 = require$1("fs");
 const yaml = require$1("js-yaml");
 const showdown = require$1("showdown");
 const converter = new showdown.Converter({ metadata: true });
@@ -450,7 +451,7 @@ class ContentItemFile {
       const dateString = cutFileName.substring(0, 10);
       const title = cutFileNameWithoutExtension.replaceAll("_", " ");
       const filePath = path.normalize(contentRoot + "/" + name);
-      const fileString = await fs.readFile(filePath, "utf-8");
+      const fileString = await fs$1.readFileSync(filePath, "utf-8");
       const fileMarkup = converter.makeHtml(fileString);
       const $ = cheerio.load(fileMarkup);
       $("body").prepend(`
@@ -553,7 +554,7 @@ class MarkdownPlugin {
     this.blogGen.addMenuItemsFilter(this.menuFilter.bind(this));
   }
   async sourceFilter(contentItems) {
-    const files = await fs$1.readdir(this.contentRoot, { withFileTypes: true });
+    const files = await fs$3.readdir(this.contentRoot, { withFileTypes: true });
     const fileMapper = new FileMapper({ files, contentRoot: this.contentRoot });
     return [...contentItems, ...await fileMapper.mapFiles()];
   }
@@ -750,6 +751,7 @@ class BlogGen extends BlogGenBase {
   }
 }
 
+const fs = require$1("fs");
 const OPTIONS_FILE = "bloggen.json";
 const defaultBuildOptions = () => ({
   contentRoot: "",
@@ -778,7 +780,7 @@ const GetBlogGenOptions = async ({
   let jsonData = {};
   if (await fs.exists(jsonPath)) {
     try {
-      const fileData = (await fs.readFile(jsonPath)).toString();
+      const fileData = (await fs.readFileSync(jsonPath)).toString();
       jsonData = JSON.parse(fileData);
     } catch (error) {
       console.error(error);

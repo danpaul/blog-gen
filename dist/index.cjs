@@ -2,8 +2,8 @@
 
 var cheerio = require('cheerio');
 var path = require('path');
-var fs = require('fs-extra');
-var fs$1 = require('fs/promises');
+var fs$2 = require('fs-extra');
+var fs$3 = require('fs/promises');
 var module$1 = require('module');
 
 var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
@@ -26,8 +26,8 @@ function _interopNamespaceDefault(e) {
 
 var cheerio__namespace = /*#__PURE__*/_interopNamespaceDefault(cheerio);
 var path__namespace = /*#__PURE__*/_interopNamespaceDefault(path);
-var fs__namespace = /*#__PURE__*/_interopNamespaceDefault(fs);
-var fs__namespace$1 = /*#__PURE__*/_interopNamespaceDefault(fs$1);
+var fs__namespace = /*#__PURE__*/_interopNamespaceDefault(fs$2);
+var fs__namespace$1 = /*#__PURE__*/_interopNamespaceDefault(fs$3);
 
 class ArchivePageTemplate {
   previousPageUrl;
@@ -446,6 +446,7 @@ var require$1 = (
 				: require
 		);
 
+const fs$1 = require$1("fs");
 const yaml = require$1("js-yaml");
 const showdown = require$1("showdown");
 const converter = new showdown.Converter({ metadata: true });
@@ -475,7 +476,7 @@ class ContentItemFile {
       const dateString = cutFileName.substring(0, 10);
       const title = cutFileNameWithoutExtension.replaceAll("_", " ");
       const filePath = path__namespace.normalize(contentRoot + "/" + name);
-      const fileString = await fs__namespace.readFile(filePath, "utf-8");
+      const fileString = await fs$1.readFileSync(filePath, "utf-8");
       const fileMarkup = converter.makeHtml(fileString);
       const $ = cheerio__namespace.load(fileMarkup);
       $("body").prepend(`
@@ -775,6 +776,7 @@ class BlogGen extends BlogGenBase {
   }
 }
 
+const fs = require$1("fs");
 const OPTIONS_FILE = "bloggen.json";
 const defaultBuildOptions = () => ({
   contentRoot: "",
@@ -801,9 +803,9 @@ const GetBlogGenOptions = async ({
     `${options.build.contentRoot}/${OPTIONS_FILE}`
   );
   let jsonData = {};
-  if (await fs__namespace.exists(jsonPath)) {
+  if (await fs.exists(jsonPath)) {
     try {
-      const fileData = (await fs__namespace.readFile(jsonPath)).toString();
+      const fileData = (await fs.readFileSync(jsonPath)).toString();
       jsonData = JSON.parse(fileData);
     } catch (error) {
       console.error(error);

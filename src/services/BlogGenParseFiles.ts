@@ -1,9 +1,10 @@
 import { Dirent } from "node:fs";
 import * as path from "path";
-import * as fs from "fs-extra";
 import IBloGenOptions from "../interfaces/IBlogGenOptions";
 import { IBlogGenParsedFile } from "../interfaces/IBlogGenParsedFile";
 import * as cheerio from "cheerio";
+
+const fs = require("fs");
 
 const yaml = require("js-yaml");
 const showdown = require("showdown");
@@ -38,7 +39,7 @@ export const BlogGenParseFile = async ({
   const title = cutFileNameWithoutExtension.replaceAll("_", " ");
   const filePath = path.normalize(contentRoot + "/" + name);
 
-  const fileString = await fs.readFile(filePath, "utf-8");
+  const fileString = await fs.readFileSync(filePath, "utf-8");
   const fileMarkup = converter.makeHtml(fileString);
   const $ = cheerio.load(fileMarkup);
   const metadata = yaml.load(converter.getMetadata(true)) || {};

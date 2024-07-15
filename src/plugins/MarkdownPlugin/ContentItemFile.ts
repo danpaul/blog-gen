@@ -1,8 +1,9 @@
 import { Dirent } from "fs-extra";
 import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/ContentItemsInterface";
 import * as path from "path";
-import * as fs from "fs-extra";
 import * as cheerio from "cheerio";
+
+const fs = require("fs");
 
 const yaml = require("js-yaml");
 const showdown = require("showdown");
@@ -40,7 +41,7 @@ export class ContentItemFile implements ContentItemsInterface {
       const title = cutFileNameWithoutExtension.replaceAll("_", " ");
       const filePath = path.normalize(contentRoot + "/" + name);
 
-      const fileString = await fs.readFile(filePath, "utf-8");
+      const fileString = await fs.readFileSync(filePath, "utf-8");
       const fileMarkup = converter.makeHtml(fileString);
       const $ = cheerio.load(fileMarkup);
 
