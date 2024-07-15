@@ -1,4 +1,5 @@
-import * as fs from "fs/promises";
+// import * as fs from "fs/promises";
+const fs = require("fs/promises");
 
 import { ContentItemsInterface } from "../BlogGen/TypesInterfaces/Data/ContentItemsInterface";
 import SourcePluginInterface from "../BlogGen/TypesInterfaces/Plugins/SourcePluginInterface";

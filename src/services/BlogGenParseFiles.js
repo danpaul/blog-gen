@@ -1,7 +1,7 @@
 import * as path from "path";
-import * as fs from "fs-extra";
 import * as cheerio from "cheerio";
 const yaml = require("js-yaml");
+const fs = require("fs/promises");
 const showdown = require("showdown");
 const converter = new showdown.Converter({ metadata: true });
 export const BlogGenParseFile = async ({ file, contentRoot, distRoot }) => {
@@ -19,7 +19,7 @@ export const BlogGenParseFile = async ({ file, contentRoot, distRoot }) => {
   const dateString = cutFileName.substring(0, 10);
   const title = cutFileNameWithoutExtension.replaceAll("_", " ");
   const filePath = path.normalize(contentRoot + "/" + name);
-  const fileString = await fs.readFileSync(filePath, "utf-8");
+  const fileString = await fs.readFile(filePath, "utf-8");
   const fileMarkup = converter.makeHtml(fileString);
   const $ = cheerio.load(fileMarkup);
   const metadata = yaml.load(converter.getMetadata(true)) || {};

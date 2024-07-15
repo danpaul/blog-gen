@@ -1,4 +1,5 @@
-import * as fs from "fs-extra";
+// import * as fs from "fs-extra";
+const fs = require("fs-extra");
 import * as path from "path";
 
 import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/ContentItemsInterface";

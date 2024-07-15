@@ -1,4 +1,6 @@
-const fs = require("fs");
+// import * as fs from "fs-extra";
+// import * as fs from "fs";
+const fs = require("fs/promises");
 import * as path from "path";
 
 const OPTIONS_FILE = "bloggen.json";
@@ -54,9 +56,9 @@ export const GetBlogGenOptions = async ({
   );
 
   let jsonData: any = {};
-  if (await fs.existsSync(jsonPath)) {
+  if (await fs.exists(jsonPath)) {
     try {
-      const fileData = (await fs.readFileSync(jsonPath)).toString();
+      const fileData = (await fs.readFile(jsonPath)).toString();
       jsonData = JSON.parse(fileData);
     } catch (error) {
       console.error(error);

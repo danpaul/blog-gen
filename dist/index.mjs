@@ -1,8 +1,7 @@
 import * as cheerio from 'cheerio';
-import * as path from 'path';
-import * as fs$2 from 'fs-extra';
-import * as fs$3 from 'fs/promises';
 import { createRequire } from 'module';
+import * as path from 'path';
+import * as fs$4 from 'fs/promises';
 
 class ArchivePageTemplate {
   previousPageUrl;
@@ -314,6 +313,13 @@ class BlogPlugin {
   }
 }
 
+var require$1 = (
+			true
+				? /* @__PURE__ */ createRequire(import.meta.url)
+				: require
+		);
+
+const fs$3 = require$1("fs-extra");
 class FileBuildPlugin {
   distRoot;
   contentRoot;
@@ -347,25 +353,26 @@ class FileBuildPlugin {
     await this.migrateAssets();
   }
   async cleanBuildDir() {
-    await fs$2.rm(this.distRoot, { recursive: true, force: true });
-    await fs$2.mkdir(this.distRoot);
+    await fs$3.rm(this.distRoot, { recursive: true, force: true });
+    await fs$3.mkdir(this.distRoot);
   }
   async buildContent({
     contentItems
   }) {
     for (const contentItem of contentItems) {
-      await fs$2.writeFile(
+      await fs$3.writeFile(
         path.normalize(`${this.distRoot}/${contentItem.pageUrl}`),
         contentItem.$.root().html() || ""
       );
     }
   }
   async migrateAssets() {
-    await fs$2.ensureDir(this.assetDistPath);
-    await fs$2.copy(this.assetSrcPath, this.assetDistPath);
+    await fs$3.ensureDir(this.assetDistPath);
+    await fs$3.copy(this.assetSrcPath, this.assetDistPath);
   }
 }
 
+const fs$2 = require$1("fs-extra");
 const FILE_NAME = "assets/css/github-markdown.css";
 const SOURCE_FILE_PATH = "./node_modules/github-markdown-css/github-markdown.css";
 const BASE_STYLES = `
@@ -415,13 +422,7 @@ class GithubMarkdownStylePlugin {
   }
 }
 
-var require$1 = (
-			true
-				? /* @__PURE__ */ createRequire(import.meta.url)
-				: require
-		);
-
-const fs$1 = require$1("fs");
+const fs$1 = require$1("fs/promises");
 const yaml = require$1("js-yaml");
 const showdown = require$1("showdown");
 const converter = new showdown.Converter({ metadata: true });
@@ -451,7 +452,7 @@ class ContentItemFile {
       const dateString = cutFileName.substring(0, 10);
       const title = cutFileNameWithoutExtension.replaceAll("_", " ");
       const filePath = path.normalize(contentRoot + "/" + name);
-      const fileString = await fs$1.readFileSync(filePath, "utf-8");
+      const fileString = await fs$1.readFile(filePath, "utf-8");
       const fileMarkup = converter.makeHtml(fileString);
       const $ = cheerio.load(fileMarkup);
       $("body").prepend(`
@@ -554,7 +555,7 @@ class MarkdownPlugin {
     this.blogGen.addMenuItemsFilter(this.menuFilter.bind(this));
   }
   async sourceFilter(contentItems) {
-    const files = await fs$3.readdir(this.contentRoot, { withFileTypes: true });
+    const files = await fs$4.readdir(this.contentRoot, { withFileTypes: true });
     const fileMapper = new FileMapper({ files, contentRoot: this.contentRoot });
     return [...contentItems, ...await fileMapper.mapFiles()];
   }
@@ -751,7 +752,7 @@ class BlogGen extends BlogGenBase {
   }
 }
 
-const fs = require$1("fs");
+const fs = require$1("fs/promises");
 const OPTIONS_FILE = "bloggen.json";
 const defaultBuildOptions = () => ({
   contentRoot: "",
@@ -778,9 +779,9 @@ const GetBlogGenOptions = async ({
     `${options.build.contentRoot}/${OPTIONS_FILE}`
   );
   let jsonData = {};
-  if (await fs.existsSync(jsonPath)) {
+  if (await fs.exists(jsonPath)) {
     try {
-      const fileData = (await fs.readFileSync(jsonPath)).toString();
+      const fileData = (await fs.readFile(jsonPath)).toString();
       jsonData = JSON.parse(fileData);
     } catch (error) {
       console.error(error);

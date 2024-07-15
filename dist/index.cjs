@@ -1,10 +1,9 @@
 'use strict';
 
 var cheerio = require('cheerio');
-var path = require('path');
-var fs$2 = require('fs-extra');
-var fs$3 = require('fs/promises');
 var module$1 = require('module');
+var path = require('path');
+var fs$4 = require('fs/promises');
 
 var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
 function _interopNamespaceDefault(e) {
@@ -26,8 +25,7 @@ function _interopNamespaceDefault(e) {
 
 var cheerio__namespace = /*#__PURE__*/_interopNamespaceDefault(cheerio);
 var path__namespace = /*#__PURE__*/_interopNamespaceDefault(path);
-var fs__namespace = /*#__PURE__*/_interopNamespaceDefault(fs$2);
-var fs__namespace$1 = /*#__PURE__*/_interopNamespaceDefault(fs$3);
+var fs__namespace = /*#__PURE__*/_interopNamespaceDefault(fs$4);
 
 class ArchivePageTemplate {
   previousPageUrl;
@@ -339,6 +337,13 @@ class BlogPlugin {
   }
 }
 
+var require$1 = (
+			false
+				? /* @__PURE__ */ module$1.createRequire((typeof document === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : (_documentCurrentScript && _documentCurrentScript.src || new URL('index.cjs', document.baseURI).href)))
+				: require
+		);
+
+const fs$3 = require$1("fs-extra");
 class FileBuildPlugin {
   distRoot;
   contentRoot;
@@ -372,25 +377,26 @@ class FileBuildPlugin {
     await this.migrateAssets();
   }
   async cleanBuildDir() {
-    await fs__namespace.rm(this.distRoot, { recursive: true, force: true });
-    await fs__namespace.mkdir(this.distRoot);
+    await fs$3.rm(this.distRoot, { recursive: true, force: true });
+    await fs$3.mkdir(this.distRoot);
   }
   async buildContent({
     contentItems
   }) {
     for (const contentItem of contentItems) {
-      await fs__namespace.writeFile(
+      await fs$3.writeFile(
         path__namespace.normalize(`${this.distRoot}/${contentItem.pageUrl}`),
         contentItem.$.root().html() || ""
       );
     }
   }
   async migrateAssets() {
-    await fs__namespace.ensureDir(this.assetDistPath);
-    await fs__namespace.copy(this.assetSrcPath, this.assetDistPath);
+    await fs$3.ensureDir(this.assetDistPath);
+    await fs$3.copy(this.assetSrcPath, this.assetDistPath);
   }
 }
 
+const fs$2 = require$1("fs-extra");
 const FILE_NAME = "assets/css/github-markdown.css";
 const SOURCE_FILE_PATH = "./node_modules/github-markdown-css/github-markdown.css";
 const BASE_STYLES = `
@@ -433,20 +439,14 @@ class GithubMarkdownStylePlugin {
     });
   }
   async buildFilter() {
-    await fs__namespace.copy(
+    await fs$2.copy(
       path__namespace.normalize(SOURCE_FILE_PATH),
       path__namespace.normalize(`${this.distRoot}/${FILE_NAME}`)
     );
   }
 }
 
-var require$1 = (
-			false
-				? /* @__PURE__ */ module$1.createRequire((typeof document === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : (_documentCurrentScript && _documentCurrentScript.src || new URL('index.cjs', document.baseURI).href)))
-				: require
-		);
-
-const fs$1 = require$1("fs");
+const fs$1 = require$1("fs/promises");
 const yaml = require$1("js-yaml");
 const showdown = require$1("showdown");
 const converter = new showdown.Converter({ metadata: true });
@@ -476,7 +476,7 @@ class ContentItemFile {
       const dateString = cutFileName.substring(0, 10);
       const title = cutFileNameWithoutExtension.replaceAll("_", " ");
       const filePath = path__namespace.normalize(contentRoot + "/" + name);
-      const fileString = await fs$1.readFileSync(filePath, "utf-8");
+      const fileString = await fs$1.readFile(filePath, "utf-8");
       const fileMarkup = converter.makeHtml(fileString);
       const $ = cheerio__namespace.load(fileMarkup);
       $("body").prepend(`
@@ -579,7 +579,7 @@ class MarkdownPlugin {
     this.blogGen.addMenuItemsFilter(this.menuFilter.bind(this));
   }
   async sourceFilter(contentItems) {
-    const files = await fs__namespace$1.readdir(this.contentRoot, { withFileTypes: true });
+    const files = await fs__namespace.readdir(this.contentRoot, { withFileTypes: true });
     const fileMapper = new FileMapper({ files, contentRoot: this.contentRoot });
     return [...contentItems, ...await fileMapper.mapFiles()];
   }
@@ -776,7 +776,7 @@ class BlogGen extends BlogGenBase {
   }
 }
 
-const fs = require$1("fs");
+const fs = require$1("fs/promises");
 const OPTIONS_FILE = "bloggen.json";
 const defaultBuildOptions = () => ({
   contentRoot: "",
@@ -803,9 +803,9 @@ const GetBlogGenOptions = async ({
     `${options.build.contentRoot}/${OPTIONS_FILE}`
   );
   let jsonData = {};
-  if (await fs.existsSync(jsonPath)) {
+  if (await fs.exists(jsonPath)) {
     try {
-      const fileData = (await fs.readFileSync(jsonPath)).toString();
+      const fileData = (await fs.readFile(jsonPath)).toString();
       jsonData = JSON.parse(fileData);
     } catch (error) {
       console.error(error);

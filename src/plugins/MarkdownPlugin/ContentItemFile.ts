@@ -3,7 +3,7 @@ import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/Conten
 import * as path from "path";
 import * as cheerio from "cheerio";
 
-const fs = require("fs");
+const fs = require("fs/promises");
 
 const yaml = require("js-yaml");
 const showdown = require("showdown");
@@ -41,7 +41,7 @@ export class ContentItemFile implements ContentItemsInterface {
       const title = cutFileNameWithoutExtension.replaceAll("_", " ");
       const filePath = path.normalize(contentRoot + "/" + name);
 
-      const fileString = await fs.readFileSync(filePath, "utf-8");
+      const fileString = await fs.readFile(filePath, "utf-8");
       const fileMarkup = converter.makeHtml(fileString);
       const $ = cheerio.load(fileMarkup);
 

@@ -1,5 +1,6 @@
 import * as path from "path";
-import * as fs from "fs-extra";
+// import * as fs from "fs-extra";
+const fs = require("fs-extra");
 import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/ContentItemsInterface";
 import { PluginInterface } from "../../BlogGen/TypesInterfaces/Plugins/PluginInterface";
 import BlogGen from "../../BlogGen/BlogGenBase";
