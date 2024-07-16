@@ -1,5 +1,5 @@
-import { BlogGenSiteOptionsType } from "../../BlogGen/Options";
 import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/ContentItemsInterface";
+import { BlogGenSiteOptionsType } from "../../BlogGen/TypesInterfaces/OptionsTypes";
 
 export const ContentItemFilter = ({
   options,

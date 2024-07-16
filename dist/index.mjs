@@ -732,6 +732,51 @@ class BlogGenBase {
   }
 }
 
+const fs = require$1("fs-extra");
+const OPTIONS_FILE = "bloggen.json";
+const getDefaultOptions = () => ({
+  site: {
+    title: "",
+    description: "",
+    author: "",
+    keywords: []
+  },
+  build: {
+    contentRoot: "",
+    distRoot: "",
+    itemsPerPage: 10
+  }
+});
+const GetBlogGenOptions = async (optionsIn) => {
+  const options = getDefaultOptions();
+  options.build.contentRoot = optionsIn?.build?.contentRoot || process.cwd();
+  options.build.distRoot = optionsIn?.build?.distRoot || path.normalize(`${options.build.contentRoot}/dist`);
+  const jsonPath = path.normalize(
+    `${options.build.contentRoot}/${OPTIONS_FILE}`
+  );
+  let jsonData = {};
+  if (await fs.exists(jsonPath)) {
+    try {
+      const fileData = (await fs.readFile(jsonPath)).toString();
+      jsonData = JSON.parse(fileData);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  Object.keys(options).forEach((optionType) => {
+    Object.keys(options[optionType]).forEach((option) => {
+      const jsonValue = jsonData?.[optionType]?.[option];
+      const optionsInValue = optionsIn?.[optionType]?.[option];
+      if (optionsInValue) {
+        options[optionType][option] = optionsInValue;
+      } else if (jsonValue) {
+        options[optionType][option] = jsonValue;
+      }
+    });
+  });
+  return options;
+};
+
 class BlogGen extends BlogGenBase {
   constructor(options) {
     super(options.site);
@@ -750,52 +795,13 @@ class BlogGen extends BlogGenBase {
     );
     this.addPlugin(new FileBuildPlugin({ distRoot, contentRoot }));
   }
-}
-
-const fs = require$1("fs-extra");
-const OPTIONS_FILE = "bloggen.json";
-const defaultBuildOptions = () => ({
-  contentRoot: "",
-  distRoot: "",
-  itemsPerPage: 10
-});
-const defaultSiteOptions = () => ({
-  title: "",
-  description: "",
-  author: "",
-  keywords: []
-});
-const GetBlogGenOptions = async ({
-  contentRoot,
-  distRoot
-} = {}) => {
-  const options = {
-    site: defaultSiteOptions(),
-    build: defaultBuildOptions()
-  };
-  options.build.contentRoot = contentRoot || process.cwd();
-  options.build.distRoot = distRoot || path.normalize(`${options.build.contentRoot}/dist`);
-  const jsonPath = path.normalize(
-    `${options.build.contentRoot}/${OPTIONS_FILE}`
-  );
-  let jsonData = {};
-  if (await fs.exists(jsonPath)) {
-    try {
-      const fileData = (await fs.readFile(jsonPath)).toString();
-      jsonData = JSON.parse(fileData);
-    } catch (error) {
-      console.error(error);
-    }
+  /**
+   * Async constructor to auto-set options
+   */
+  static async Construct(options) {
+    const resolvedOptions = await GetBlogGenOptions(options);
+    return new BlogGen(resolvedOptions);
   }
-  Object.keys(options).forEach((optionType) => {
-    Object.keys(options[optionType]).forEach((option) => {
-      const jsonValue = jsonData?.[optionType]?.[option];
-      if (jsonValue) {
-        options[optionType][option] = jsonValue;
-      }
-    });
-  });
-  return options;
-};
+}
 
 export { BlogGen, BlogGenBase, GetBlogGenOptions };

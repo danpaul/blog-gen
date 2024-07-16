@@ -1,56 +1,36 @@
-// import * as fs from "fs-extra";
-// import * as fs from "fs";
-const fs = require("fs-extra");
 import * as path from "path";
+import {
+  BlogGenOptionsType,
+  BlogGenOptionsOptionalType,
+} from "./TypesInterfaces/OptionsTypes";
+
+const fs = require("fs-extra");
 
 const OPTIONS_FILE = "bloggen.json";
 
-export type BlogGenSiteOptionsType = {
-  title: string;
-  description: string;
-  author: string;
-  keywords: string[];
-};
-
-export type BlogGenBuildOptionsType = {
-  contentRoot: string;
-  distRoot: string;
-  itemsPerPage: number;
-};
-
-export type BlogGenOptionsType = {
-  site: BlogGenSiteOptionsType;
-  build: BlogGenBuildOptionsType;
-};
-
-const defaultBuildOptions = (): BlogGenBuildOptionsType => ({
-  contentRoot: "",
-  distRoot: "",
-  itemsPerPage: 10,
+const getDefaultOptions = (): BlogGenOptionsType => ({
+  site: {
+    title: "",
+    description: "",
+    author: "",
+    keywords: [],
+  },
+  build: {
+    contentRoot: "",
+    distRoot: "",
+    itemsPerPage: 10,
+  },
 });
 
-const defaultSiteOptions = (): BlogGenSiteOptionsType => ({
-  title: "",
-  description: "",
-  author: "",
-  keywords: [],
-});
+export const GetBlogGenOptions = async (
+  optionsIn?: BlogGenOptionsOptionalType
+): Promise<BlogGenOptionsType> => {
+  const options: BlogGenOptionsType = getDefaultOptions();
 
-export const GetBlogGenOptions = async ({
-  contentRoot,
-  distRoot,
-}: {
-  contentRoot?: string;
-  distRoot?: string;
-} = {}): Promise<BlogGenOptionsType> => {
-  const options: BlogGenOptionsType = {
-    site: defaultSiteOptions(),
-    build: defaultBuildOptions(),
-  };
-
-  options.build.contentRoot = contentRoot || process.cwd();
+  options.build.contentRoot = optionsIn?.build?.contentRoot || process.cwd();
   options.build.distRoot =
-    distRoot || path.normalize(`${options.build.contentRoot}/dist`);
+    optionsIn?.build?.distRoot ||
+    path.normalize(`${options.build.contentRoot}/dist`);
   const jsonPath = path.normalize(
     `${options.build.contentRoot}/${OPTIONS_FILE}`
   );
@@ -69,7 +49,12 @@ export const GetBlogGenOptions = async ({
     // @ts-ignore
     Object.keys(options[optionType]).forEach((option) => {
       const jsonValue = jsonData?.[optionType]?.[option];
-      if (jsonValue) {
+      // @ts-ignore
+      const optionsInValue = optionsIn?.[optionType]?.[option];
+      if (optionsInValue) {
+        // @ts-ignore
+        options[optionType][option] = optionsInValue;
+      } else if (jsonValue) {
         // @ts-ignore
         options[optionType][option] = jsonValue;
       }

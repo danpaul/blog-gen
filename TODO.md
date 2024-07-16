@@ -1,3 +1,7 @@
+- fix no asset bug (crash if no asset folder)
+- fix multiple fs packages
+- add site and page meta options
+- add README
 - create script
   - add config manager
     - site meta

@@ -4,7 +4,12 @@ import { GithubMarkdownStylePlugin } from "../plugins/GithubMarkdownStylePlugin/
 import { MarkdownPlugin } from "../plugins/MarkdownPlugin/MarkdownPlugin";
 import { MenuPlugin } from "../plugins/MenuPlugin/MenuPlugin";
 import BlogGenBase from "./BlogGenBase";
-import { BlogGenOptionsType } from "./Options";
+import { GetBlogGenOptions } from "./Options";
+
+import {
+  BlogGenOptionsType,
+  BlogGenOptionsOptionalType,
+} from "./TypesInterfaces/OptionsTypes";
 
 class BlogGen extends BlogGenBase {
   constructor(options: BlogGenOptionsType) {
@@ -23,6 +28,14 @@ class BlogGen extends BlogGenBase {
       })
     );
     this.addPlugin(new FileBuildPlugin({ distRoot, contentRoot }));
+  }
+
+  /**
+   * Async constructor to auto-set options
+   */
+  static async Construct(options?: BlogGenOptionsOptionalType) {
+    const resolvedOptions = await GetBlogGenOptions(options);
+    return new BlogGen(resolvedOptions);
   }
 }
 

@@ -1,12 +1,14 @@
+interface ImageInterface {
+    src: string;
+    alt: string;
+}
+
 interface ContentItemsInterface {
     title: string;
     type: string;
     published?: Date;
     excerpt?: string;
-    featuredImage?: {
-        src: string;
-        alt: string;
-    };
+    featuredImage?: ImageInterface;
     $: cheerio.Root;
     meta: {
         [key: string]: any;
@@ -42,25 +44,40 @@ type BuildFilterType = (args: {
     contentItems: ContentItemsInterface[];
 }) => Promise<void>;
 
+/**
+ * Top Level options
+ */
+type BlogGenOptionsType = {
+    site: BlogGenSiteOptionsType;
+    build: BlogGenBuildOptionsType;
+};
+type BlogGenOptionsOptionalType = {
+    site?: AllOptional<BlogGenSiteOptionsType>;
+    build?: AllOptional<BlogGenBuildOptionsType>;
+};
+/**
+ * Site Options
+ */
 type BlogGenSiteOptionsType = {
     title: string;
     description: string;
     author: string;
     keywords: string[];
 };
+/**
+ * Build Options
+ */
 type BlogGenBuildOptionsType = {
     contentRoot: string;
     distRoot: string;
     itemsPerPage: number;
 };
-type BlogGenOptionsType = {
-    site: BlogGenSiteOptionsType;
-    build: BlogGenBuildOptionsType;
+/**
+ * Partial to make all properties optional
+ */
+type AllOptional<T> = {
+    [P in keyof T]?: T[P];
 };
-declare const GetBlogGenOptions: ({ contentRoot, distRoot, }?: {
-    contentRoot?: string;
-    distRoot?: string;
-}) => Promise<BlogGenOptionsType>;
 
 declare class BlogGenBase {
     private sourceFilters;
@@ -83,6 +100,12 @@ declare class BlogGenBase {
 
 declare class BlogGen extends BlogGenBase {
     constructor(options: BlogGenOptionsType);
+    /**
+     * Async constructor to auto-set options
+     */
+    static Construct(options?: BlogGenOptionsOptionalType): Promise<BlogGen>;
 }
+
+declare const GetBlogGenOptions: (optionsIn?: BlogGenOptionsOptionalType) => Promise<BlogGenOptionsType>;
 
 export { BlogGen, BlogGenBase, GetBlogGenOptions };

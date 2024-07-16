@@ -1,6 +1,6 @@
 import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/ContentItemsInterface";
 import { MenuItemInterface } from "../../BlogGen/TypesInterfaces/Data/MenuItemInterface";
-import { BlogGenSiteOptionsType } from "../../BlogGen/Options";
+import { BlogGenSiteOptionsType } from "../../BlogGen/TypesInterfaces/OptionsTypes";
 
 export class InjectMenu {
   private menuItems: MenuItemInterface[];

@@ -6,7 +6,7 @@ import { MenuItemInterface } from "./TypesInterfaces/Data/MenuItemInterface";
 import { MenuItemsFilterType } from "./TypesInterfaces/Filters/MenuItemsFilter";
 import { PreBuildFilterType } from "./TypesInterfaces/Filters/PreBuildFilterType";
 import { BuildFilterType } from "./TypesInterfaces/Filters/BuildFilterType";
-import { BlogGenSiteOptionsType } from "./Options";
+import { BlogGenSiteOptionsType } from "./TypesInterfaces/OptionsTypes";
 
 class BlogGenBase {
   // filters

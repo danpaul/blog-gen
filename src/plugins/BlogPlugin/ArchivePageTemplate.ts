@@ -1,6 +1,6 @@
 import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/ContentItemsInterface";
 import * as cheerio from "cheerio";
-import { IBlogGenImage } from "../../interfaces/IBlogGenImage";
+import { ImageInterface } from "../../BlogGen/TypesInterfaces/Data/ImageInterface";
 import { CategoryLink } from "./BlogPlugin";
 
 export class ArchivePageTemplate {
@@ -63,7 +63,7 @@ export class ArchivePageTemplate {
     `);
     return $;
   }
-  private getImage(image?: IBlogGenImage) {
+  private getImage(image?: ImageInterface) {
     if (!image) return "";
     return `<img src="${image.src}" alt="${image.alt}">`;
   }
