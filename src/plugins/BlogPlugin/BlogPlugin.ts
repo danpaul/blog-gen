@@ -4,6 +4,7 @@ import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/Conten
 import { ArchivePageTemplate } from "./ArchivePageTemplate";
 import { CategoryTree, CategoryTreeNode } from "./CategoryTree";
 import { MenuItemInterface } from "../../BlogGen/TypesInterfaces/Data/MenuItemInterface";
+import { TagContentItemsMap } from "./TagContentItemsMap";
 
 export type CategoryLink = {
   label: string;
@@ -59,20 +60,38 @@ export class BlogPlugin implements PluginInterface {
         addNodes(categoryTree.tree, categoryMenuItems[0].children, []);
       }
     }
-    return [
-      ...menuItems,
-      ...(categoryMenuItems.length ? categoryMenuItems : []),
-    ];
+
+    const tagMenuItems: MenuItemInterface[] = [];
+    const tagContentItemsMap = new TagContentItemsMap({ contentItems });
+    if (Object.keys(tagContentItemsMap).length) {
+      tagMenuItems.push({ title: "Tags", children: [] });
+      const parent = tagMenuItems[0].children;
+      Object.keys(tagContentItemsMap.map).forEach((tag) => {
+        parent?.push({
+          // @ts-ignore
+          title: `${tag}(${tagContentItemsMap.map[tag].length})`,
+          href: this.getTagUrl({ tag, page: 1 }),
+        });
+      });
+    }
+
+    return [...menuItems, ...categoryMenuItems, ...tagMenuItems];
   }
 
   async filterContentItems(contentItems: ContentItemsInterface[]) {
     const blogContentItems = this.getBlogContentItems(contentItems);
+
     return [
       ...this.addBlogMetaToPageContentItems(contentItems),
       // add main, uncategorized blog items
-      ...this.getArchivePages(blogContentItems),
+      ...this.generateArchivePages({
+        paginatedItems: this.paginate(blogContentItems),
+      }),
       // get category archive pages
       ...(await this.getCategoryArchivePages(blogContentItems)),
+      // generate tag archive pages
+      ...(await this.getTagArchivePages(blogContentItems)),
+      // generate tag blog items
     ];
   }
 
@@ -97,12 +116,6 @@ export class BlogPlugin implements PluginInterface {
     });
   }
 
-  private getArchivePages(contentItems: ContentItemsInterface[]) {
-    return this.generateArchivePages({
-      paginatedItems: this.paginate(contentItems),
-    });
-  }
-
   private async getCategoryArchivePages(
     contentItems: ContentItemsInterface[]
   ): Promise<ContentItemsInterface[]> {
@@ -122,6 +135,33 @@ export class BlogPlugin implements PluginInterface {
     return categoryArchivePages;
   }
 
+  private async getTagArchivePages(
+    contentItems: ContentItemsInterface[]
+  ): Promise<ContentItemsInterface[]> {
+    let tagArchivePages: ContentItemsInterface[] = [];
+    const tagContentItemsMap = new TagContentItemsMap({ contentItems });
+    Object.keys(tagContentItemsMap.map).forEach((tag) => {
+      const contentItems = tagContentItemsMap.map[tag];
+      const paginatedTagItems = this.paginate(contentItems);
+      const test = this.generateArchivePages({
+        paginatedItems: paginatedTagItems,
+        categories: [tag],
+        isTag: true,
+      });
+
+      tagArchivePages = [
+        ...tagArchivePages,
+        ...this.generateArchivePages({
+          paginatedItems: paginatedTagItems,
+          categories: [tag],
+          isTag: true,
+        }),
+      ];
+    });
+
+    return tagArchivePages;
+  }
+
   private getBlogContentItems(contentItems: ContentItemsInterface[]) {
     return contentItems
       .filter(({ type }) => type == "post")
@@ -131,9 +171,11 @@ export class BlogPlugin implements PluginInterface {
   private generateArchivePages({
     paginatedItems,
     categories,
+    isTag = false,
   }: {
     paginatedItems: ContentItemsInterface[][];
     categories?: string[];
+    isTag?: boolean;
   }): ContentItemsInterface[] {
     const contentItems: ContentItemsInterface[] = [];
     paginatedItems.forEach((items, index) => {
@@ -141,14 +183,16 @@ export class BlogPlugin implements PluginInterface {
         paginatedItems,
         categories,
         index,
+        isTag,
       });
       const isHome = !categories && index == 0;
-      const categoryId = this.getCategoryId(categories);
+      const categoryId = this.getCategoryId(categories, isTag);
       const archivePageTemplate = new ArchivePageTemplate({
         previousPageUrl: previousPageUrl || undefined,
         nextPageUrl: nextPageUrl || undefined,
         items,
-        categoryLinks: this.getCategoryLinks(categories),
+        categoryLinks: this.getCategoryLinks(categories, isTag),
+        isTag,
       });
       contentItems.push({
         title: isHome
@@ -193,7 +237,10 @@ export class BlogPlugin implements PluginInterface {
     return paginatedItems;
   }
 
-  private getCategoryId(categories?: string[]) {
+  private getCategoryId(categories?: string[], isTag: boolean = false) {
+    if (isTag) {
+      return `tag-${categories?.[0] || ""}`;
+    }
     return categories ? categories.join("-") : "";
   }
 
@@ -201,7 +248,10 @@ export class BlogPlugin implements PluginInterface {
     return `category-${categories.join("-")}-${page}.html`;
   }
 
-  private getCategoryLink(categories: string[]): CategoryLink {
+  private getCategoryLink(
+    categories: string[],
+    isTag: boolean = false
+  ): CategoryLink {
     const link: CategoryLink = {
       label: "",
       url: "",
@@ -211,11 +261,22 @@ export class BlogPlugin implements PluginInterface {
       return link;
     }
     link.label = categories[categories.length - 1];
-    link.url = this.getCategoryUrl(categories, 1);
+    link.url = isTag
+      ? this.getTagUrl({ tag: categories[0], page: 1 })
+      : this.getCategoryUrl(categories, 1);
     return link;
   }
 
-  private getCategoryLinks(categories?: string[]): CategoryLink[] {
+  private getCategoryLinks(
+    categories?: string[],
+    isTag: boolean = false
+  ): CategoryLink[] {
+    if (isTag) {
+      if (!categories || !categories.length) {
+        return [];
+      }
+      return [this.getCategoryLink(categories, true)];
+    }
     const links: CategoryLink[] = [];
     if (!categories) return links;
     for (let i = 0; i < categories.length; i++) {
@@ -225,14 +286,20 @@ export class BlogPlugin implements PluginInterface {
     return links;
   }
 
+  private getTagUrl({ tag, page }: { tag: string; page: number }) {
+    return `tag-${tag}-${page}.html`;
+  }
+
   private getPageUrls({
     paginatedItems,
     categories,
     index,
+    isTag = false,
   }: {
     paginatedItems: ContentItemsInterface[][];
     categories?: string[];
     index: number;
+    isTag: boolean;
   }): {
     pageUrl: string;
     nextPageUrl: string | null;
@@ -244,20 +311,29 @@ export class BlogPlugin implements PluginInterface {
     const pageUrl = isHome
       ? "index.html"
       : categories
-      ? this.getCategoryUrl(categories, index + 1)
+      ? isTag
+        ? this.getTagUrl({ tag: categories[0] || "", page: index + 1 })
+        : this.getCategoryUrl(categories, index + 1)
       : `${index + 1}.html`;
     const nextPageUrl = hasNextPage
       ? categories
-        ? this.getCategoryUrl(categories, index + 2)
+        ? isTag
+          ? this.getTagUrl({ tag: categories[0] || "", page: index + 2 })
+          : this.getCategoryUrl(categories, index + 2)
         : `${index + 2}.html`
       : null;
-    const previousPageUrl = hasPreviousPage
+    let previousPageUrl = hasPreviousPage
       ? categories
         ? this.getCategoryUrl(categories, index)
         : index == 1
         ? "index.html"
         : `${index}.html`
       : null;
+    if (isTag) {
+      previousPageUrl = hasPreviousPage
+        ? this.getTagUrl({ tag: categories?.[0] || "", page: index + 2 })
+        : null;
+    }
 
     return {
       pageUrl,

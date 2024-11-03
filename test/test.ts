@@ -7,7 +7,7 @@ const DIST_ROOT = __dirname + "/dist";
 const ITEMS_PER_PAGE = 1;
 
 (async () => {
-  const blogGen = new BlogGen({
+  const blogGen = await BlogGen.Construct({
     site: { title: "my site", description: "", author: "", keywords: [] },
     build: {
       contentRoot: CONTENT_ROOT,

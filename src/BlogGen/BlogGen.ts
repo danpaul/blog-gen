@@ -31,7 +31,7 @@ class BlogGen extends BlogGenBase {
   }
 
   /**
-   * Async constructor to auto-set options
+   * Async constructor to asynchronously init options
    */
   static async Construct(options?: BlogGenOptionsOptionalType) {
     const resolvedOptions = await GetBlogGenOptions(options);

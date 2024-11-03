@@ -8,27 +8,35 @@ export class ArchivePageTemplate {
   private nextPageUrl?: string;
   private items: ContentItemsInterface[];
   private categoryLinks: CategoryLink[];
+  private isTag: boolean;
   constructor({
     previousPageUrl,
     nextPageUrl,
     items,
     categoryLinks,
+    isTag = false,
   }: {
     previousPageUrl?: string;
     nextPageUrl?: string;
     items: ContentItemsInterface[];
     categoryLinks: CategoryLink[];
+    isTag?: boolean;
   }) {
     this.previousPageUrl = previousPageUrl;
     this.nextPageUrl = nextPageUrl;
     this.items = items;
     this.categoryLinks = categoryLinks;
+    this.isTag = isTag;
   }
   render(): cheerio.Root {
     const $ = cheerio.load("");
     const body = $("body");
     if (this.categoryLinks.length) {
-      body.append(`<h1 style="padding-bottom: 60px;">Category: </h1>`);
+      body.append(
+        `<h1 style="padding-bottom: 60px;">${
+          this.isTag ? "Tag" : "Category"
+        }: </h1>`
+      );
       const h1 = $("body h1");
       this.categoryLinks.forEach(({ label, url }, index) => {
         h1.append(`<a href="${url}">${label}</a>`);

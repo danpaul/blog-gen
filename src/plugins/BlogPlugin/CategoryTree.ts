@@ -1,9 +1,3 @@
-/**
- * - label
- * - items
- * - children
- */
-
 import { ContentItemsInterface } from "../../BlogGen/TypesInterfaces/Data/ContentItemsInterface";
 
 export type CategoryTreeNode = {
