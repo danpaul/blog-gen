@@ -70,7 +70,7 @@ export class FileBuildPlugin implements PluginInterface {
 
   private async migrateAssets() {
     await fs.ensureDir(this.assetDistPath);
-    if (!fs.exists(this.assetSrcPath)) {
+    if (!(await fs.exists(this.assetSrcPath))) {
       console.log("no /assets folder to migrate...");
     } else {
       await fs.copy(this.assetSrcPath, this.assetDistPath);

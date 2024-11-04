@@ -53,7 +53,7 @@ export class InjectMenu {
           <a href="index.html">
             ${this.options.title}
           </a>
-          <a href="#" onclick="blogGenRenderMenuScriptOpen()">MENU</a>
+          <a href="#" onclick="blogGenRenderMenuScriptOpen()">menu</a>
         </h3>
         <div
           style="position: absolute; display: none; top: 0; left: 0; right: 0; bottom: 0; background: white; padding: 15px; min-height: 100vh;"

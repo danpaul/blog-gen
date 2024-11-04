@@ -49,14 +49,16 @@ export class ArchivePageTemplate {
       let header = `<h2><a href="${pageUrl}">${title}<a/></h2>`;
       const clonedHeader = cheerio.load($("body header").toString());
       if (clonedHeader) {
-        clonedHeader("h1").replaceWith(`<h2>${clonedHeader("h1").text()}</h2>`);
+        clonedHeader("h1").replaceWith(
+          `<h2><a href="${pageUrl}">${clonedHeader("h1").text()}</a></h2>`
+        );
         header = clonedHeader("header").html() || "";
       }
       body.append(
         `
           <article>
             ${header}
-            ${this.getImage(featuredImage)}
+            ${this.getImage(featuredImage, pageUrl)}
             <p>${excerpt || ""}</p>
             <a href="${pageUrl}">More...</a>
           <article>
@@ -71,9 +73,10 @@ export class ArchivePageTemplate {
     `);
     return $;
   }
-  private getImage(image?: ImageInterface) {
-    if (!image) return "";
-    return `<img src="${image.src}" alt="${image.alt}">`;
+  private getImage(image?: ImageInterface, pageUrl?: string) {
+    console.log("pageUrl", pageUrl);
+    if (!image || !pageUrl) return "";
+    return `<a href="${pageUrl}"><img src="${image.src}" alt="${image.alt}"></a>`;
   }
   private previousPageLink() {
     if (!this.previousPageUrl) {

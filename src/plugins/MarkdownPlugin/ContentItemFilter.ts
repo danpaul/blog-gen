@@ -12,5 +12,11 @@ export const ContentItemFilter = ({
   title = `${title}${title && contentItem.title ? " - " : ""}`;
   title = contentItem.title ? `${title}${contentItem.title}` : title;
   contentItem.$("head").append(`<title>${title}</title>`);
+  contentItem.$("head").append(`<meta charset="UTF-8">`);
+  contentItem
+    .$("head")
+    .append(
+      `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
+    );
   return contentItem;
 };

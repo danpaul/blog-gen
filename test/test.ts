@@ -2,7 +2,8 @@ import BlogGen from "../src/BlogGen/BlogGen";
 
 const express = require("express");
 
-const CONTENT_ROOT = __dirname + "/blog";
+// const CONTENT_ROOT = __dirname + "/blog";
+const CONTENT_ROOT = __dirname + "/blog2";
 const DIST_ROOT = __dirname + "/dist";
 const ITEMS_PER_PAGE = 1;
 
