@@ -64,9 +64,6 @@ export class BlogPlugin implements PluginInterface {
     const tagMenuItems: MenuItemInterface[] = [];
     const tagContentItemsMap = new TagContentItemsMap({ contentItems });
 
-    // asdf
-    console.log("tagContentItemsMap", JSON.stringify(tagContentItemsMap));
-
     if (Object.keys(tagContentItemsMap).length) {
       tagMenuItems.push({ title: "Tags", children: [] });
       const parent = tagMenuItems[0].children;

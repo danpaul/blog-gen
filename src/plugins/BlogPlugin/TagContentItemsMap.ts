@@ -20,8 +20,6 @@ export class TagContentItemsMap {
 
   private init({ contentItems }: { contentItems: ContentItemsInterface[] }) {
     contentItems.forEach((contentItem) => {
-      // asdf
-      console.log("contentItem?.meta", contentItem?.meta);
       const tags = contentItem?.meta?.tags;
       if (tags?.length) {
         // @ts-ignore

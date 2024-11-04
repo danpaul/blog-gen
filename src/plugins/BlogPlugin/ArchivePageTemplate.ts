@@ -74,7 +74,6 @@ export class ArchivePageTemplate {
     return $;
   }
   private getImage(image?: ImageInterface, pageUrl?: string) {
-    console.log("pageUrl", pageUrl);
     if (!image || !pageUrl) return "";
     return `<a href="${pageUrl}"><img src="${image.src}" alt="${image.alt}"></a>`;
   }
