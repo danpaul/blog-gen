@@ -21,6 +21,7 @@ const ITEMS_PER_PAGE = 1;
 
   const app = express();
   const port = 3000;
+
   app.use(express.static(DIST_ROOT));
   app.listen(port, () => {
     console.log(`Serving site on: ${port}`);
