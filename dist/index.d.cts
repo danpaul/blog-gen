@@ -101,7 +101,7 @@ declare class BlogGenBase {
 declare class BlogGen extends BlogGenBase {
     constructor(options: BlogGenOptionsType);
     /**
-     * Async constructor to auto-set options
+     * Async constructor to asynchronously init options
      */
     static Construct(options?: BlogGenOptionsOptionalType): Promise<BlogGen>;
 }

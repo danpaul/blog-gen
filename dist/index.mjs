@@ -8,22 +8,27 @@ class ArchivePageTemplate {
   nextPageUrl;
   items;
   categoryLinks;
+  isTag;
   constructor({
     previousPageUrl,
     nextPageUrl,
     items,
-    categoryLinks
+    categoryLinks,
+    isTag = false
   }) {
     this.previousPageUrl = previousPageUrl;
     this.nextPageUrl = nextPageUrl;
     this.items = items;
     this.categoryLinks = categoryLinks;
+    this.isTag = isTag;
   }
   render() {
     const $ = cheerio.load("");
     const body = $("body");
     if (this.categoryLinks.length) {
-      body.append(`<h1 style="padding-bottom: 60px;">Category: </h1>`);
+      body.append(
+        `<h1 style="padding-bottom: 60px;">${this.isTag ? "Tag" : "Category"}: </h1>`
+      );
       const h1 = $("body h1");
       this.categoryLinks.forEach(({ label, url }, index) => {
         h1.append(`<a href="${url}">${label}</a>`);
@@ -36,14 +41,16 @@ class ArchivePageTemplate {
       let header = `<h2><a href="${pageUrl}">${title}<a/></h2>`;
       const clonedHeader = cheerio.load($2("body header").toString());
       if (clonedHeader) {
-        clonedHeader("h1").replaceWith(`<h2>${clonedHeader("h1").text()}</h2>`);
+        clonedHeader("h1").replaceWith(
+          `<h2><a href="${pageUrl}">${clonedHeader("h1").text()}</a></h2>`
+        );
         header = clonedHeader("header").html() || "";
       }
       body.append(
         `
           <article>
             ${header}
-            ${this.getImage(featuredImage)}
+            ${this.getImage(featuredImage, pageUrl)}
             <p>${excerpt || ""}</p>
             <a href="${pageUrl}">More...</a>
           <article>
@@ -58,10 +65,11 @@ class ArchivePageTemplate {
     `);
     return $;
   }
-  getImage(image) {
-    if (!image)
+  getImage(image, pageUrl) {
+    console.log("pageUrl", pageUrl);
+    if (!image || !pageUrl)
       return "";
-    return `<img src="${image.src}" alt="${image.alt}">`;
+    return `<a href="${pageUrl}"><img src="${image.src}" alt="${image.alt}"></a>`;
   }
   previousPageLink() {
     if (!this.previousPageUrl) {
@@ -122,6 +130,30 @@ class CategoryTree {
   }
 }
 
+class TagContentItemsMap {
+  map;
+  constructor({ contentItems }) {
+    this.map = {};
+    this.init({ contentItems });
+  }
+  init({ contentItems }) {
+    contentItems.forEach((contentItem) => {
+      console.log("contentItem?.meta", contentItem?.meta);
+      const tags = contentItem?.meta?.tags;
+      if (tags?.length) {
+        tags.forEach((tag) => {
+          if (typeof tag === "string") {
+            if (!this.map[tag]) {
+              this.map[tag] = [];
+            }
+            this.map[tag].push(contentItem);
+          }
+        });
+      }
+    });
+  }
+}
+
 class BlogPlugin {
   itemsPerPage;
   constructor({ itemsPerPage }) {
@@ -159,19 +191,35 @@ class BlogPlugin {
         addNodes(categoryTree.tree, categoryMenuItems[0].children, []);
       }
     }
-    return [
-      ...menuItems,
-      ...categoryMenuItems.length ? categoryMenuItems : []
-    ];
+    const tagMenuItems = [];
+    const tagContentItemsMap = new TagContentItemsMap({ contentItems });
+    console.log("tagContentItemsMap", JSON.stringify(tagContentItemsMap));
+    if (Object.keys(tagContentItemsMap).length) {
+      tagMenuItems.push({ title: "Tags", children: [] });
+      const parent = tagMenuItems[0].children;
+      Object.keys(tagContentItemsMap.map).forEach((tag) => {
+        parent?.push({
+          // @ts-ignore
+          title: `${tag}(${tagContentItemsMap.map[tag].length})`,
+          href: this.getTagUrl({ tag, page: 1 })
+        });
+      });
+    }
+    return [...menuItems, ...categoryMenuItems, ...tagMenuItems];
   }
   async filterContentItems(contentItems) {
     const blogContentItems = this.getBlogContentItems(contentItems);
     return [
       ...this.addBlogMetaToPageContentItems(contentItems),
       // add main, uncategorized blog items
-      ...this.getArchivePages(blogContentItems),
+      ...this.generateArchivePages({
+        paginatedItems: this.paginate(blogContentItems)
+      }),
       // get category archive pages
-      ...await this.getCategoryArchivePages(blogContentItems)
+      ...await this.getCategoryArchivePages(blogContentItems),
+      // generate tag archive pages
+      ...await this.getTagArchivePages(blogContentItems)
+      // generate tag blog items
     ];
   }
   addBlogMetaToPageContentItems(contentItems) {
@@ -192,11 +240,6 @@ class BlogPlugin {
       return contentItem;
     });
   }
-  getArchivePages(contentItems) {
-    return this.generateArchivePages({
-      paginatedItems: this.paginate(contentItems)
-    });
-  }
   async getCategoryArchivePages(contentItems) {
     let categoryArchivePages = [];
     await new CategoryTree({ contentItems }).iterateTree(
@@ -213,27 +256,52 @@ class BlogPlugin {
     );
     return categoryArchivePages;
   }
+  async getTagArchivePages(contentItems) {
+    let tagArchivePages = [];
+    const tagContentItemsMap = new TagContentItemsMap({ contentItems });
+    Object.keys(tagContentItemsMap.map).forEach((tag) => {
+      const contentItems2 = tagContentItemsMap.map[tag];
+      const paginatedTagItems = this.paginate(contentItems2);
+      this.generateArchivePages({
+        paginatedItems: paginatedTagItems,
+        categories: [tag],
+        isTag: true
+      });
+      tagArchivePages = [
+        ...tagArchivePages,
+        ...this.generateArchivePages({
+          paginatedItems: paginatedTagItems,
+          categories: [tag],
+          isTag: true
+        })
+      ];
+    });
+    return tagArchivePages;
+  }
   getBlogContentItems(contentItems) {
     return contentItems.filter(({ type }) => type == "post").sort(this.compareItemsByDate);
   }
   generateArchivePages({
     paginatedItems,
-    categories
+    categories,
+    isTag = false
   }) {
     const contentItems = [];
     paginatedItems.forEach((items, index) => {
       const { pageUrl, nextPageUrl, previousPageUrl } = this.getPageUrls({
         paginatedItems,
         categories,
-        index
+        index,
+        isTag
       });
       const isHome = !categories && index == 0;
-      const categoryId = this.getCategoryId(categories);
+      const categoryId = this.getCategoryId(categories, isTag);
       const archivePageTemplate = new ArchivePageTemplate({
         previousPageUrl: previousPageUrl || void 0,
         nextPageUrl: nextPageUrl || void 0,
         items,
-        categoryLinks: this.getCategoryLinks(categories)
+        categoryLinks: this.getCategoryLinks(categories, isTag),
+        isTag
       });
       contentItems.push({
         title: isHome ? "Home" : categoryId ? `${categoryId}-${index + 1}` : `archive-${index + 1}`,
@@ -265,13 +333,16 @@ class BlogPlugin {
     }
     return paginatedItems;
   }
-  getCategoryId(categories) {
+  getCategoryId(categories, isTag = false) {
+    if (isTag) {
+      return `tag-${categories?.[0] || ""}`;
+    }
     return categories ? categories.join("-") : "";
   }
   getCategoryUrl(categories, page) {
     return `category-${categories.join("-")}-${page}.html`;
   }
-  getCategoryLink(categories) {
+  getCategoryLink(categories, isTag = false) {
     const link = {
       label: "",
       url: ""
@@ -281,10 +352,16 @@ class BlogPlugin {
       return link;
     }
     link.label = categories[categories.length - 1];
-    link.url = this.getCategoryUrl(categories, 1);
+    link.url = isTag ? this.getTagUrl({ tag: categories[0], page: 1 }) : this.getCategoryUrl(categories, 1);
     return link;
   }
-  getCategoryLinks(categories) {
+  getCategoryLinks(categories, isTag = false) {
+    if (isTag) {
+      if (!categories || !categories.length) {
+        return [];
+      }
+      return [this.getCategoryLink(categories, true)];
+    }
     const links = [];
     if (!categories)
       return links;
@@ -294,17 +371,24 @@ class BlogPlugin {
     }
     return links;
   }
+  getTagUrl({ tag, page }) {
+    return `tag-${tag}-${page}.html`;
+  }
   getPageUrls({
     paginatedItems,
     categories,
-    index
+    index,
+    isTag = false
   }) {
     const hasNextPage = paginatedItems.length > index + 1;
     const hasPreviousPage = index != 0;
     const isHome = !categories && index == 0;
-    const pageUrl = isHome ? "index.html" : categories ? this.getCategoryUrl(categories, index + 1) : `${index + 1}.html`;
-    const nextPageUrl = hasNextPage ? categories ? this.getCategoryUrl(categories, index + 2) : `${index + 2}.html` : null;
-    const previousPageUrl = hasPreviousPage ? categories ? this.getCategoryUrl(categories, index) : index == 1 ? "index.html" : `${index}.html` : null;
+    const pageUrl = isHome ? "index.html" : categories ? isTag ? this.getTagUrl({ tag: categories[0] || "", page: index + 1 }) : this.getCategoryUrl(categories, index + 1) : `${index + 1}.html`;
+    const nextPageUrl = hasNextPage ? categories ? isTag ? this.getTagUrl({ tag: categories[0] || "", page: index + 2 }) : this.getCategoryUrl(categories, index + 2) : `${index + 2}.html` : null;
+    let previousPageUrl = hasPreviousPage ? categories ? this.getCategoryUrl(categories, index) : index == 1 ? "index.html" : `${index}.html` : null;
+    if (isTag) {
+      previousPageUrl = hasPreviousPage ? this.getTagUrl({ tag: categories?.[0] || "", page: index + 2 }) : null;
+    }
     return {
       pageUrl,
       nextPageUrl,
@@ -368,7 +452,11 @@ class FileBuildPlugin {
   }
   async migrateAssets() {
     await fs$3.ensureDir(this.assetDistPath);
-    await fs$3.copy(this.assetSrcPath, this.assetDistPath);
+    if (!await fs$3.exists(this.assetSrcPath)) {
+      console.log("no /assets folder to migrate...");
+    } else {
+      await fs$3.copy(this.assetSrcPath, this.assetDistPath);
+    }
   }
 }
 
@@ -524,6 +612,10 @@ const ContentItemFilter = ({
   title = `${title}${title && contentItem.title ? " - " : ""}`;
   title = contentItem.title ? `${title}${contentItem.title}` : title;
   contentItem.$("head").append(`<title>${title}</title>`);
+  contentItem.$("head").append(`<meta charset="UTF-8">`);
+  contentItem.$("head").append(
+    `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
+  );
   return contentItem;
 };
 
@@ -596,24 +688,41 @@ class InjectMenu {
   }
   getMenuString() {
     return `
-      ${this.getMenuScript()}
-      <h3 style="display: flex; justify-content: space-between;">
-        <a href="index.html">
-          ${this.options.title}
-        </a>
-        <a href="#" onclick="blogGenRenderMenuScriptOpen()">MENU</a>
-      </h3>
-      <hr>
-      <div
-        style="position: absolute; display: none; top: 0; left: 0; right: 0; bottom: 0; background: white; padding: 15px;"
-        id="blogGenRenderMenuWrapper"
-      >
-        <a
-          href="#"
-          onclick="blogGenRenderMenuScriptClose()"
-          style="position: absolute; top: 10px; right: 10px; font-size: 24px; font-weight: bold;"
-        >X</a>
-        ${this.renderNodes(this.menuItems)}
+      <div style="
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        box-shadow: 0px 5px 5px hsla(210, 18%, 87%, 1);
+        background: #FFFFFF;
+      ">
+        ${this.getMenuScript()}
+        <h3
+          style="
+            display: flex;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            background: #FFFFFF;
+            padding: 10px;
+            margin-top: 0px;
+            margin-bottom: 5px;
+          "
+        >
+          <a href="index.html">
+            ${this.options.title}
+          </a>
+          <a href="#" onclick="blogGenRenderMenuScriptOpen()">menu</a>
+        </h3>
+        <div
+          style="position: absolute; display: none; top: 0; left: 0; right: 0; bottom: 0; background: white; padding: 15px; min-height: 100vh;"
+          id="blogGenRenderMenuWrapper"
+        >
+          <a
+            href="#"
+            onclick="blogGenRenderMenuScriptClose()"
+            style="position: absolute; top: 10px; right: 10px; font-size: 24px; font-weight: bold;"
+          >X</a>
+          ${this.renderNodes(this.menuItems)}
+        </div>
       </div>
     `;
   }
@@ -796,7 +905,7 @@ class BlogGen extends BlogGenBase {
     this.addPlugin(new FileBuildPlugin({ distRoot, contentRoot }));
   }
   /**
-   * Async constructor to auto-set options
+   * Async constructor to asynchronously init options
    */
   static async Construct(options) {
     const resolvedOptions = await GetBlogGenOptions(options);
