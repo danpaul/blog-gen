@@ -2,13 +2,13 @@
 
 ## About
 
-Blog-gen is a static blog generator. Blog-gen is in development but is working to generate blogs.
+`Blog-gen` is a Node based static blog generator. `Blog-gen` is in development but is working to generate blogs.
 
-Blog-gen was created for people who are focused on content, and want to create a standard blog and with as little configuration as possible want to create a blog with paginated results and standard taxonomies (categories and tags).
-
-You simply point Blog-gen to directory containing markdown files and assets. As long as the markdown files follow a few conventions, Blog-gen will generate a static blog for you.
+`Blog-gen` was created for people who are focused on content and want to publish a relatively standard looking and functioning blog with as little coding and configuration as possible. `Blog-gen` just requires NPM. `Blog-gen` uses [github-markdown-css](https://github.com/sindresorhus/github-markdown-css) for styling.
 
 ## Usage
+
+You write your content in a directory following a flat directory structure, follow a few conventions, install `Blog-gen` and generate your blog.
 
 ### Conventions
 
