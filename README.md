@@ -60,7 +60,7 @@ Run `npm i https://github.com/danpaul/blog-gen --save`
 
 Add a folder in the root called `/assets`.
 
-Create a post in the root called `2024-01-01_Hello_world.md`.
+Create a post in the root called `2024-01-01_Hello_world.md` with some markdown content.
 
 Create an `index.js` file with the following content:
 
