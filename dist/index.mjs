@@ -66,7 +66,6 @@ class ArchivePageTemplate {
     return $;
   }
   getImage(image, pageUrl) {
-    console.log("pageUrl", pageUrl);
     if (!image || !pageUrl)
       return "";
     return `<a href="${pageUrl}"><img src="${image.src}" alt="${image.alt}"></a>`;
@@ -138,7 +137,6 @@ class TagContentItemsMap {
   }
   init({ contentItems }) {
     contentItems.forEach((contentItem) => {
-      console.log("contentItem?.meta", contentItem?.meta);
       const tags = contentItem?.meta?.tags;
       if (tags?.length) {
         tags.forEach((tag) => {
@@ -193,7 +191,6 @@ class BlogPlugin {
     }
     const tagMenuItems = [];
     const tagContentItemsMap = new TagContentItemsMap({ contentItems });
-    console.log("tagContentItemsMap", JSON.stringify(tagContentItemsMap));
     if (Object.keys(tagContentItemsMap).length) {
       tagMenuItems.push({ title: "Tags", children: [] });
       const parent = tagMenuItems[0].children;
@@ -775,6 +772,20 @@ class MenuPlugin {
   }
 }
 
+class SortPlugin {
+  // @ts-ignore
+  blogGen;
+  async init(blogGen) {
+    this.blogGen = blogGen;
+    this.blogGen.addContentItemsFilter(this.sortFilter.bind(this));
+  }
+  async sortFilter(contentItems) {
+    return contentItems.sort((a, b) => {
+      return (b.published ? b.published.getTime() : 0) - (a.published ? a.published.getTime() : 0);
+    });
+  }
+}
+
 class BlogGenBase {
   // filters
   sourceFilters = [];
@@ -892,6 +903,7 @@ class BlogGen extends BlogGenBase {
     const { contentRoot, distRoot, itemsPerPage } = options.build;
     this.addPlugin(new MarkdownPlugin({ contentRoot }));
     this.addPlugin(new MenuPlugin());
+    this.addPlugin(new SortPlugin());
     this.addPlugin(
       new GithubMarkdownStylePlugin({
         distRoot

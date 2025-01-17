@@ -3,6 +3,7 @@ import { FileBuildPlugin } from "../plugins/FileBuildPlugin/FileBuildPlugin";
 import { GithubMarkdownStylePlugin } from "../plugins/GithubMarkdownStylePlugin/GithubMarkdownStylePlugin";
 import { MarkdownPlugin } from "../plugins/MarkdownPlugin/MarkdownPlugin";
 import { MenuPlugin } from "../plugins/MenuPlugin/MenuPlugin";
+import { SortPlugin } from "../plugins/SortPlugin/SortPlugin";
 import BlogGenBase from "./BlogGenBase";
 import { GetBlogGenOptions } from "./Options";
 
@@ -17,6 +18,7 @@ class BlogGen extends BlogGenBase {
     const { contentRoot, distRoot, itemsPerPage } = options.build;
     this.addPlugin(new MarkdownPlugin({ contentRoot }));
     this.addPlugin(new MenuPlugin());
+    this.addPlugin(new SortPlugin());
     this.addPlugin(
       new GithubMarkdownStylePlugin({
         distRoot,

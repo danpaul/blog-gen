@@ -3,9 +3,9 @@ import BlogGen from "../src/BlogGen/BlogGen";
 const express = require("express");
 
 // const CONTENT_ROOT = __dirname + "/blog";
-const CONTENT_ROOT = __dirname + "/blog2";
+const CONTENT_ROOT = __dirname + "/blog";
 const DIST_ROOT = __dirname + "/dist";
-const ITEMS_PER_PAGE = 1;
+const ITEMS_PER_PAGE = 5;
 
 (async () => {
   const blogGen = await BlogGen.Construct({
